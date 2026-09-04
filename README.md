@@ -1,5 +1,10 @@
 # 📊 Amazon Sales Analysis Dashboard
 
+
+[![Live Dashboard](https://img.shields.io/badge/🚀%20Live%20Dashboard-Streamlit-red?style=for-the-badge)](https://amazon-sales-analysis-yc5rg66hi5yqty4bgh7v2f.streamlit.app/)
+
+An interactive Amazon Sales Analysis Dashboard built using Python, Pandas, NumPy, Plotly, and Streamlit.
+
 An interactive **Amazon Sales Analysis Dashboard** built using Python, Pandas, Plotly, and Streamlit.
 
 This project analyzes Amazon sales data and presents meaningful insights through interactive charts, visualizations, and dashboard components.
