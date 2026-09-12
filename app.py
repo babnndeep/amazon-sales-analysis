@@ -1,8 +1,3 @@
-# ============================================================
-# AMAZON SALES INTELLIGENCE DASHBOARD
-# Streamlit + Pandas + Plotly
-# ============================================================
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -23,155 +18,399 @@ st.set_page_config(
 
 
 # ============================================================
-# PROFESSIONAL CSS
+# ENHANCED PROFESSIONAL CSS
 # ============================================================
 
 st.markdown("""
 <style>
 
+/* -----------------------------------------------------------
+   GLOBAL PAGE
+----------------------------------------------------------- */
+
 .stApp {
-    background-color: #F7F8FA;
+    background: linear-gradient(135deg, #f5f7fb 0%, #eef2f7 100%);
+    color: #172033;
 }
 
-.block-container {
+.main .block-container {
     padding-top: 2rem;
-    padding-bottom: 3rem;
-    padding-left: 3rem;
-    padding-right: 3rem;
+    padding-bottom: 2rem;
+    max-width: 1500px;
 }
 
 
-/* Sidebar */
+/* -----------------------------------------------------------
+   MAIN HEADER
+----------------------------------------------------------- */
 
-section[data-testid="stSidebar"] {
-    background-color: #FFFFFF;
-    border-right: 1px solid #E5E7EB;
+.dashboard-header {
+    background: linear-gradient(
+        135deg,
+        #111827 0%,
+        #1e293b 55%,
+        #334155 100%
+    );
+
+    padding: 32px 36px;
+    border-radius: 22px;
+    margin-bottom: 28px;
+
+    box-shadow:
+        0 15px 35px rgba(15, 23, 42, 0.18);
+
+    position: relative;
+    overflow: hidden;
 }
 
-section[data-testid="stSidebar"] h1,
-section[data-testid="stSidebar"] h2,
-section[data-testid="stSidebar"] h3 {
-    color: #172033;
+.dashboard-header::before {
+    content: "";
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    background: rgba(249, 115, 22, 0.12);
+    top: -120px;
+    right: -60px;
 }
 
+.dashboard-header::after {
+    content: "";
+    position: absolute;
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: rgba(59, 130, 246, 0.08);
+    bottom: -100px;
+    left: 35%;
+}
 
-/* Main title */
-
-.main-title {
-    font-size: 42px;
-    font-weight: 750;
-    color: #172033;
-    margin-bottom: 4px;
+.dashboard-title {
+    color: white;
+    font-size: 38px;
+    font-weight: 800;
+    margin: 0;
+    position: relative;
+    z-index: 2;
     letter-spacing: -1px;
 }
 
-.subtitle {
-    color: #6B7280;
+.dashboard-subtitle {
+    color: #cbd5e1;
     font-size: 16px;
+    margin-top: 8px;
+    position: relative;
+    z-index: 2;
+}
+
+.header-badge {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 7px 15px;
+    border-radius: 30px;
+    background: rgba(249, 115, 22, 0.16);
+    border: 1px solid rgba(249, 115, 22, 0.35);
+    color: #fed7aa;
+    font-size: 13px;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+}
+
+
+/* -----------------------------------------------------------
+   SIDEBAR
+----------------------------------------------------------- */
+
+section[data-testid="stSidebar"] {
+    background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f8fafc 100%
+    );
+
+    border-right: 1px solid #e2e8f0;
+}
+
+section[data-testid="stSidebar"] > div {
+    padding-top: 2rem;
+}
+
+.sidebar-title {
+    font-size: 23px;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 5px;
+}
+
+.sidebar-subtitle {
+    font-size: 13px;
+    color: #64748b;
     margin-bottom: 25px;
 }
 
+.filter-heading {
+    color: #334155;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
 
-/* KPI Cards */
+
+/* -----------------------------------------------------------
+   KPI CARDS
+----------------------------------------------------------- */
 
 .kpi-card {
-    background: white;
-    border: 1px solid #E5E7EB;
-    border-radius: 14px;
-    padding: 20px 22px;
-    min-height: 130px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+
+    padding: 22px 22px 20px 22px;
+
+    min-height: 145px;
+
+    box-shadow:
+        0 7px 20px rgba(15, 23, 42, 0.06);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+
+    box-shadow:
+        0 15px 30px rgba(15, 23, 42, 0.12);
+
+    border-color: #cbd5e1;
+}
+
+.kpi-card::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    right: -35px;
+    top: -35px;
+    background: rgba(249, 115, 22, 0.07);
 }
 
 .kpi-label {
-    color: #6B7280;
     font-size: 13px;
-    font-weight: 600;
+    font-weight: 700;
+    color: #64748b;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.7px;
 }
 
 .kpi-value {
-    color: #172033;
-    font-size: 29px;
-    font-weight: 750;
-    margin-top: 8px;
+    font-size: 30px;
+    font-weight: 800;
+    color: #111827;
+    margin-top: 10px;
+    line-height: 1.1;
 }
 
 .kpi-description {
-    color: #9CA3AF;
     font-size: 12px;
-    margin-top: 5px;
+    color: #94a3b8;
+    margin-top: 10px;
 }
 
 
-/* Section headings */
+/* -----------------------------------------------------------
+   SECTION HEADINGS
+----------------------------------------------------------- */
 
 .section-title {
-    font-size: 25px;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 800;
     color: #172033;
     margin-top: 25px;
     margin-bottom: 5px;
 }
 
 .section-subtitle {
-    color: #6B7280;
     font-size: 14px;
-    margin-bottom: 15px;
+    color: #64748b;
+    margin-bottom: 18px;
 }
 
 
-/* Insight Cards */
+/* -----------------------------------------------------------
+   CHART CONTAINER
+----------------------------------------------------------- */
+
+.chart-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+
+    padding: 18px;
+
+    box-shadow:
+        0 6px 18px rgba(15, 23, 42, 0.05);
+
+    margin-bottom: 20px;
+}
+
+
+/* -----------------------------------------------------------
+   INSIGHT CARDS
+----------------------------------------------------------- */
 
 .insight-card {
-    background: white;
-    border-left: 4px solid #FF9900;
-    border-radius: 10px;
-    padding: 15px 18px;
-    margin-bottom: 10px;
-    border-top: 1px solid #E5E7EB;
-    border-right: 1px solid #E5E7EB;
-    border-bottom: 1px solid #E5E7EB;
+    background: linear-gradient(
+        135deg,
+        #fff7ed 0%,
+        #ffffff 100%
+    );
+
+    border: 1px solid #fed7aa;
+    border-left: 5px solid #f97316;
+
+    border-radius: 14px;
+
+    padding: 18px 20px;
+
+    margin-top: 10px;
+
+    box-shadow:
+        0 6px 16px rgba(249, 115, 22, 0.06);
 }
 
 .insight-title {
-    font-weight: 700;
-    color: #172033;
-    font-size: 14px;
-}
-
-.insight-text {
-    color: #4B5563;
     font-size: 13px;
-    margin-top: 4px;
+    color: #9a3412;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.insight-value {
+    font-size: 20px;
+    color: #172033;
+    font-weight: 800;
+    margin-top: 5px;
 }
 
 
-/* Info Box */
+/* -----------------------------------------------------------
+   TABS
+----------------------------------------------------------- */
 
-.info-box {
-    background: #FFFFFF;
-    border: 1px solid #E5E7EB;
+button[data-baseweb="tab"] {
+    font-size: 14px;
+    font-weight: 700;
+    color: #64748b;
+    padding: 12px 20px;
+}
+
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: #ea580c;
+}
+
+div[data-baseweb="tab-highlight"] {
+    background-color: #f97316;
+    height: 3px;
+    border-radius: 3px;
+}
+
+
+/* -----------------------------------------------------------
+   DATAFRAME / TABLE
+----------------------------------------------------------- */
+
+div[data-testid="stDataFrame"] {
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+}
+
+
+/* -----------------------------------------------------------
+   BUTTONS
+----------------------------------------------------------- */
+
+.stButton > button {
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.stButton > button:hover {
+    border-color: #f97316;
+    color: #ea580c;
+}
+
+
+/* -----------------------------------------------------------
+   SELECTBOX
+----------------------------------------------------------- */
+
+div[data-baseweb="select"] > div {
+    border-radius: 10px;
+    border-color: #e2e8f0;
+    background-color: white;
+}
+
+
+/* -----------------------------------------------------------
+   DATE INPUT
+----------------------------------------------------------- */
+
+div[data-testid="stDateInput"] input {
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+
+/* -----------------------------------------------------------
+   INFO MESSAGE
+----------------------------------------------------------- */
+
+div[data-testid="stAlert"] {
     border-radius: 12px;
-    padding: 18px;
-    margin-top: 10px;
 }
 
 
-/* Footer */
+/* -----------------------------------------------------------
+   FOOTER
+----------------------------------------------------------- */
 
-.footer {
-    text-align: center;
-    color: #9CA3AF;
-    font-size: 12px;
+.dashboard-footer {
     margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #E5E7EB;
+    padding: 22px;
+
+    text-align: center;
+
+    border-top: 1px solid #e2e8f0;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+}
+
+.footer-brand {
+    color: #475569;
+    font-weight: 700;
 }
 
 
-/* Hide Streamlit branding */
+/* -----------------------------------------------------------
+   HIDE STREAMLIT DEFAULT ELEMENTS
+----------------------------------------------------------- */
 
 #MainMenu {
     visibility: hidden;
@@ -179,6 +418,35 @@ section[data-testid="stSidebar"] h3 {
 
 footer {
     visibility: hidden;
+}
+
+header {
+    background: transparent !important;
+}
+
+
+/* -----------------------------------------------------------
+   MOBILE RESPONSIVENESS
+----------------------------------------------------------- */
+
+@media (max-width: 768px) {
+
+    .dashboard-title {
+        font-size: 28px;
+    }
+
+    .dashboard-header {
+        padding: 25px;
+    }
+
+    .kpi-value {
+        font-size: 24px;
+    }
+
+    .main .block-container {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
 }
 
 </style>
@@ -192,335 +460,186 @@ footer {
 @st.cache_data
 def load_data():
 
-    file_name = "Amazon Sale Report.csv"
+    df = pd.read_csv("Amazon Sale Report.csv")
 
-    df = pd.read_csv(file_name)
-
-    # --------------------------------------------------------
     # Remove completely empty columns
-    # --------------------------------------------------------
-
     df = df.dropna(axis=1, how="all")
 
-
-    # --------------------------------------------------------
-    # DATE
-    # --------------------------------------------------------
-
+    # Convert date
     if "Date" in df.columns:
-
         df["Date"] = pd.to_datetime(
             df["Date"],
             errors="coerce"
         )
 
-
-    # --------------------------------------------------------
-    # AMOUNT
-    # --------------------------------------------------------
-
+    # Convert numeric columns
     if "Amount" in df.columns:
-
         df["Amount"] = pd.to_numeric(
             df["Amount"],
             errors="coerce"
         ).fillna(0)
 
-
-    # --------------------------------------------------------
-    # QUANTITY
-    # --------------------------------------------------------
-
     if "Qty" in df.columns:
-
         df["Qty"] = pd.to_numeric(
             df["Qty"],
             errors="coerce"
         ).fillna(0)
 
-
-    # --------------------------------------------------------
-    # ORDER ID
-    # --------------------------------------------------------
-
-    if "Order ID" not in df.columns:
-
-        possible_order_columns = [
-            "OrderID",
-            "order_id",
-            "Order Id"
-        ]
-
-        for col in possible_order_columns:
-
-            if col in df.columns:
-
-                df["Order ID"] = df[col]
-
-                break
-
-
-    # --------------------------------------------------------
-    # SKU
-    # --------------------------------------------------------
-
-    if "SKU" not in df.columns:
-
-        possible_sku_columns = [
-            "Sku",
-            "sku",
-            "Product ID",
-            "Product_ID"
-        ]
-
-        for col in possible_sku_columns:
-
-            if col in df.columns:
-
-                df["SKU"] = df[col]
-
-                break
-
-
-    # --------------------------------------------------------
-    # CUSTOMER TYPE
-    # --------------------------------------------------------
-
+    # Create Customer Type
     if "Customer Type" not in df.columns:
 
         if "B2B" in df.columns:
 
-            df["Customer Type"] = np.where(
-                df["B2B"].astype(str).str.lower().isin(
-                    ["true", "1", "yes"]
-                ),
-                "Business",
-                "Individual"
+            df["Customer Type"] = (
+                df["B2B"]
+                .astype(str)
+                .str.lower()
+                .map({
+                    "true": "B2B",
+                    "1": "B2B",
+                    "yes": "B2B",
+                    "false": "B2C",
+                    "0": "B2C",
+                    "no": "B2C"
+                })
+                .fillna("B2C")
             )
 
         else:
+            df["Customer Type"] = "B2C"
 
-            df["Customer Type"] = "All Customers"
+    # Validate required columns
+    if "Date" not in df.columns:
+        st.error("Date column not found in dataset.")
+        st.stop()
 
+    if "Amount" not in df.columns:
+        st.error("Amount column not found in dataset.")
+        st.stop()
+
+    # Remove invalid dates
+    df = df.dropna(subset=["Date"])
 
     return df
 
 
-# ============================================================
-# LOAD DATA SAFELY
-# ============================================================
-
-try:
-
-    df = load_data()
-
-except FileNotFoundError:
-
-    st.error(
-        "Amazon Sale Report.csv was not found. "
-        "Make sure the CSV file is in the same folder as app.py."
-    )
-
-    st.stop()
-
-
-# ============================================================
-# DATA VALIDATION
-# ============================================================
-
-if "Date" not in df.columns:
-
-    st.error(
-        "The dataset must contain a 'Date' column."
-    )
-
-    st.stop()
-
-
-if "Amount" not in df.columns:
-
-    st.error(
-        "The dataset must contain an 'Amount' column."
-    )
-
-    st.stop()
-
-
-# Remove rows without dates
-
-df = df.dropna(
-    subset=["Date"]
-).copy()
+df = load_data()
 
 
 # ============================================================
 # SIDEBAR
 # ============================================================
 
-with st.sidebar:
+st.sidebar.markdown(
+    """
+    <div class="sidebar-title">🛒 Sales Intelligence</div>
+    <div class="sidebar-subtitle">
+        Interactive Amazon sales analytics
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-    st.markdown(
-        """
-        <h2 style="color:#172033;">
-        🔎 Filters
-        </h2>
-        """,
-        unsafe_allow_html=True
-    )
-
-    st.markdown("---")
-
-
-    # --------------------------------------------------------
-    # CATEGORY
-    # --------------------------------------------------------
-
-    if "Category" in df.columns:
-
-        categories = sorted(
-            df["Category"]
-            .dropna()
-            .astype(str)
-            .unique()
-            .tolist()
-        )
-
-        selected_category = st.selectbox(
-            "Category",
-            ["All"] + categories,
-            key="category_filter"
-        )
-
-    else:
-
-        selected_category = "All"
+st.sidebar.markdown(
+    '<div class="filter-heading">Filters</div>',
+    unsafe_allow_html=True
+)
 
 
-    # --------------------------------------------------------
-    # SIZE
-    # --------------------------------------------------------
+# Category filter
+if "Category" in df.columns:
 
-    if "Size" in df.columns:
-
-        sizes = sorted(
-            df["Size"]
-            .dropna()
-            .astype(str)
-            .unique()
-            .tolist()
-        )
-
-        selected_size = st.selectbox(
-            "Size",
-            ["All"] + sizes,
-            key="size_filter"
-        )
-
-    else:
-
-        selected_size = "All"
-
-
-    # --------------------------------------------------------
-    # COURIER STATUS
-    # --------------------------------------------------------
-
-    if "Courier Status" in df.columns:
-
-        courier_statuses = sorted(
-            df["Courier Status"]
-            .dropna()
-            .astype(str)
-            .unique()
-            .tolist()
-        )
-
-        selected_courier = st.selectbox(
-            "Courier Status",
-            ["All"] + courier_statuses,
-            key="courier_filter"
-        )
-
-    else:
-
-        selected_courier = "All"
-
-
-    # --------------------------------------------------------
-    # CUSTOMER TYPE
-    # --------------------------------------------------------
-
-    customer_types = sorted(
-        df["Customer Type"]
+    categories = sorted(
+        df["Category"]
         .dropna()
         .astype(str)
         .unique()
         .tolist()
     )
 
-    selected_customer = st.selectbox(
-        "Customer Type",
-        ["All"] + customer_types,
-        key="customer_filter"
+    selected_category = st.sidebar.multiselect(
+        "Category",
+        categories,
+        default=categories
     )
 
-
-    # ========================================================
-    # DATE RANGE FILTER
-    # ========================================================
-
-    min_date = df["Date"].min().date()
-
-    max_date = df["Date"].max().date()
+else:
+    selected_category = []
 
 
-    selected_dates = st.date_input(
-        "Date Range",
-        value=(min_date, max_date),
-        min_value=min_date,
-        max_value=max_date,
-        key="date_range_filter"
+# Size filter
+if "Size" in df.columns:
+
+    sizes = sorted(
+        df["Size"]
+        .dropna()
+        .astype(str)
+        .unique()
+        .tolist()
     )
 
-
-    # --------------------------------------------------------
-    # SAFELY PROCESS DATE SELECTION
-    # --------------------------------------------------------
-
-    if (
-        isinstance(selected_dates, tuple)
-        and len(selected_dates) == 2
-    ):
-
-        start_date = pd.Timestamp(
-            selected_dates[0]
-        )
-
-        end_date = pd.Timestamp(
-            selected_dates[1]
-        )
-
-    else:
-
-        start_date = pd.Timestamp(
-            min_date
-        )
-
-        end_date = pd.Timestamp(
-            max_date
-        )
-
-
-    st.markdown("---")
-
-
-    st.caption(
-        "Filters update the complete dashboard dynamically."
+    selected_size = st.sidebar.multiselect(
+        "Size",
+        sizes,
+        default=sizes
     )
 
-    st.caption(
-        f"Available data: {min_date} → {max_date}"
+else:
+    selected_size = []
+
+
+# Courier status filter
+if "Courier Status" in df.columns:
+
+    courier_statuses = sorted(
+        df["Courier Status"]
+        .dropna()
+        .astype(str)
+        .unique()
+        .tolist()
     )
+
+    selected_courier = st.sidebar.multiselect(
+        "Courier Status",
+        courier_statuses,
+        default=courier_statuses
+    )
+
+else:
+    selected_courier = []
+
+
+# Customer type filter
+customer_types = sorted(
+    df["Customer Type"]
+    .dropna()
+    .astype(str)
+    .unique()
+    .tolist()
+)
+
+selected_customer_type = st.sidebar.multiselect(
+    "Customer Type",
+    customer_types,
+    default=customer_types
+)
+
+
+# Date filter
+min_date = df["Date"].min().date()
+max_date = df["Date"].max().date()
+
+st.sidebar.markdown(
+    '<div class="filter-heading">Date Range</div>',
+    unsafe_allow_html=True
+)
+
+selected_dates = st.sidebar.date_input(
+    "Select dates",
+    value=(min_date, max_date),
+    min_value=min_date,
+    max_value=max_date
+)
 
 
 # ============================================================
@@ -530,86 +649,72 @@ with st.sidebar:
 filtered_df = df.copy()
 
 
-# ------------------------------------------------------------
-# CATEGORY FILTER
-# ------------------------------------------------------------
-
-if (
-    selected_category != "All"
-    and "Category" in filtered_df.columns
-):
-
+if "Category" in filtered_df.columns and selected_category:
     filtered_df = filtered_df[
-        filtered_df["Category"].astype(str)
-        == selected_category
+        filtered_df["Category"]
+        .astype(str)
+        .isin(selected_category)
     ]
 
 
-# ------------------------------------------------------------
-# SIZE FILTER
-# ------------------------------------------------------------
-
-if (
-    selected_size != "All"
-    and "Size" in filtered_df.columns
-):
-
+if "Size" in filtered_df.columns and selected_size:
     filtered_df = filtered_df[
-        filtered_df["Size"].astype(str)
-        == selected_size
+        filtered_df["Size"]
+        .astype(str)
+        .isin(selected_size)
     ]
 
 
-# ------------------------------------------------------------
-# COURIER STATUS FILTER
-# ------------------------------------------------------------
-
-if (
-    selected_courier != "All"
-    and "Courier Status" in filtered_df.columns
-):
-
+if "Courier Status" in filtered_df.columns and selected_courier:
     filtered_df = filtered_df[
-        filtered_df["Courier Status"].astype(str)
-        == selected_courier
+        filtered_df["Courier Status"]
+        .astype(str)
+        .isin(selected_courier)
     ]
 
 
-# ------------------------------------------------------------
-# CUSTOMER TYPE FILTER
-# ------------------------------------------------------------
-
-if selected_customer != "All":
-
+if selected_customer_type:
     filtered_df = filtered_df[
-        filtered_df["Customer Type"].astype(str)
-        == selected_customer
+        filtered_df["Customer Type"]
+        .astype(str)
+        .isin(selected_customer_type)
     ]
 
 
-# ------------------------------------------------------------
-# DATE FILTER
-# ------------------------------------------------------------
+# Date filtering
+if isinstance(selected_dates, tuple) and len(selected_dates) == 2:
 
-filtered_df = filtered_df[
-    (filtered_df["Date"] >= start_date)
-    &
-    (filtered_df["Date"] <= end_date)
-]
+    start_date = pd.Timestamp(selected_dates[0])
+    end_date = pd.Timestamp(selected_dates[1])
+
+    filtered_df = filtered_df[
+        (filtered_df["Date"] >= start_date)
+        &
+        (filtered_df["Date"] <= end_date)
+    ]
 
 
 # ============================================================
-# HEADER
+# DASHBOARD HEADER
 # ============================================================
 
 st.markdown(
     """
-    <div class="main-title">
-        🛒 Amazon Sales Intelligence
-    </div>
+    <div class="dashboard-header">
 
-    <div class="subtitle">
-        Executive analytics dashboard for sales, products and operations
+        <div class="dashboard-title">
+            Amazon Sales Intelligence
+        </div>
+
+        <div class="dashboard-subtitle">
+            Interactive analytics dashboard for understanding
+            revenue, products, customers, and operations.
+        </div>
+
+        <div class="header-badge">
+            📈 Data-Driven Sales Analytics
+        </div>
+
     </div>
     """,
     unsafe_allow_html=True
@@ -622,19 +727,11 @@ st.markdown(
 
 total_revenue = filtered_df["Amount"].sum()
 
-
-total_units = (
-    filtered_df["Qty"].sum()
-    if "Qty" in filtered_df.columns
-    else 0
-)
-
+total_units = filtered_df["Qty"].sum()
 
 if "Order ID" in filtered_df.columns:
 
-    total_orders = (
-        filtered_df["Order ID"].nunique()
-    )
+    total_orders = filtered_df["Order ID"].nunique()
 
 else:
 
@@ -643,51 +740,11 @@ else:
 
 if "SKU" in filtered_df.columns:
 
-    total_products = (
-        filtered_df["SKU"].nunique()
-    )
+    total_products = filtered_df["SKU"].nunique()
 
 else:
 
-    total_products = len(filtered_df)
-
-
-# ============================================================
-# FORMAT FUNCTIONS
-# ============================================================
-
-def format_currency(value):
-
-    if value >= 10000000:
-
-        return f"₹{value / 10000000:.2f}Cr"
-
-    elif value >= 100000:
-
-        return f"₹{value / 100000:.1f}L"
-
-    elif value >= 1000:
-
-        return f"₹{value / 1000:.1f}K"
-
-    else:
-
-        return f"₹{value:,.0f}"
-
-
-def format_number(value):
-
-    if value >= 1000000:
-
-        return f"{value / 1000000:.1f}M"
-
-    elif value >= 1000:
-
-        return f"{value / 1000:.1f}K"
-
-    else:
-
-        return f"{value:,.0f}"
+    total_products = 0
 
 
 # ============================================================
@@ -697,37 +754,29 @@ def format_number(value):
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
 
-# ------------------------------------------------------------
-# KPI 1
-# ------------------------------------------------------------
-
 with kpi1:
 
     st.markdown(
         f"""
         <div class="kpi-card">
 
-        <div class="kpi-label">
-        Total Revenue
-        </div>
+            <div class="kpi-label">
+                💰 Total Revenue
+            </div>
 
-        <div class="kpi-value">
-        {format_currency(total_revenue)}
-        </div>
+            <div class="kpi-value">
+                ₹{total_revenue / 10000000:.2f} Cr
+            </div>
 
-        <div class="kpi-description">
-        Sales generated
-        </div>
+            <div class="kpi-description">
+                Total sales generated
+            </div>
 
         </div>
         """,
         unsafe_allow_html=True
     )
 
-
-# ------------------------------------------------------------
-# KPI 2
-# ------------------------------------------------------------
 
 with kpi2:
 
@@ -735,27 +784,23 @@ with kpi2:
         f"""
         <div class="kpi-card">
 
-        <div class="kpi-label">
-        Units Sold
-        </div>
+            <div class="kpi-label">
+                📦 Units Sold
+            </div>
 
-        <div class="kpi-value">
-        {format_number(total_units)}
-        </div>
+            <div class="kpi-value">
+                {total_units / 1000:.1f}K
+            </div>
 
-        <div class="kpi-description">
-        Total quantity
-        </div>
+            <div class="kpi-description">
+                Products sold
+            </div>
 
         </div>
         """,
         unsafe_allow_html=True
     )
 
-
-# ------------------------------------------------------------
-# KPI 3
-# ------------------------------------------------------------
 
 with kpi3:
 
@@ -763,17 +808,17 @@ with kpi3:
         f"""
         <div class="kpi-card">
 
-        <div class="kpi-label">
-        Orders
-        </div>
+            <div class="kpi-label">
+                🧾 Orders
+            </div>
 
-        <div class="kpi-value">
-        {format_number(total_orders)}
-        </div>
+            <div class="kpi-value">
+                {total_orders / 1000:.1f}K
+            </div>
 
-        <div class="kpi-description">
-        Unique orders
-        </div>
+            <div class="kpi-description">
+                Unique customer orders
+            </div>
 
         </div>
         """,
@@ -781,27 +826,23 @@ with kpi3:
     )
 
 
-# ------------------------------------------------------------
-# KPI 4
-# ------------------------------------------------------------
-
 with kpi4:
 
     st.markdown(
         f"""
         <div class="kpi-card">
 
-        <div class="kpi-label">
-        Products
-        </div>
+            <div class="kpi-label">
+                🏷️ Products
+            </div>
 
-        <div class="kpi-value">
-        {format_number(total_products)}
-        </div>
+            <div class="kpi-value">
+                {total_products / 1000:.1f}K
+            </div>
 
-        <div class="kpi-description">
-        Unique SKUs
-        </div>
+            <div class="kpi-description">
+                Unique SKUs
+            </div>
 
         </div>
         """,
@@ -832,180 +873,111 @@ with tab1:
     st.markdown(
         """
         <div class="section-title">
-        Sales Performance
+            Executive Overview
         </div>
 
         <div class="section-subtitle">
-        Revenue movement across the selected period
+            Understand overall sales performance and category trends.
         </div>
         """,
         unsafe_allow_html=True
     )
 
 
-    # --------------------------------------------------------
-    # SALES TREND
-    # --------------------------------------------------------
+    # Sales Trend
+    daily_sales = (
+        filtered_df
+        .groupby("Date", as_index=False)["Amount"]
+        .sum()
+        .sort_values("Date")
+    )
 
-    if not filtered_df.empty:
+    fig_sales = px.line(
+        daily_sales,
+        x="Date",
+        y="Amount",
+        title="Sales Performance Over Time",
+        markers=True
+    )
 
-        daily_sales = (
-            filtered_df
-            .groupby(
-                "Date",
-                as_index=False
-            )["Amount"]
-            .sum()
-            .sort_values("Date")
-        )
+    fig_sales.update_layout(
+        template="plotly_white",
+        xaxis_title="Date",
+        yaxis_title="Revenue (₹)",
+        hovermode="x unified",
+        height=420
+    )
 
-
-        fig_sales = px.line(
-            daily_sales,
-            x="Date",
-            y="Amount",
-            markers=True,
-            title="Sales Performance"
-        )
-
-
-        fig_sales.update_layout(
-            template="plotly_white",
-            height=450,
-            margin=dict(
-                l=20,
-                r=20,
-                t=60,
-                b=20
-            ),
-            xaxis_title="Date",
-            yaxis_title="Revenue (₹)"
-        )
+    st.plotly_chart(
+        fig_sales,
+        use_container_width=True,
+        key="sales_trend_chart"
+    )
 
 
-        st.plotly_chart(
-            fig_sales,
-            use_container_width=True,
-            key="executive_sales_trend"
-        )
-
-    else:
-
-        st.warning(
-            "No data available for the selected filters."
-        )
-
-
-    # --------------------------------------------------------
-    # TWO CHARTS
-    # --------------------------------------------------------
-
+    # Category + Size
     col1, col2 = st.columns(2)
 
 
-    # --------------------------------------------------------
-    # REVENUE BY CATEGORY
-    # --------------------------------------------------------
-
     with col1:
 
-        if (
-            "Category" in filtered_df.columns
-            and not filtered_df.empty
-        ):
+        if "Category" in filtered_df.columns:
 
             category_sales = (
                 filtered_df
-                .groupby(
-                    "Category",
-                    as_index=False
-                )["Amount"]
+                .groupby("Category", as_index=False)["Amount"]
                 .sum()
-                .sort_values(
-                    "Amount",
-                    ascending=False
-                )
-                .head(10)
+                .sort_values("Amount", ascending=False)
             )
-
 
             fig_category = px.bar(
                 category_sales,
-                x="Amount",
-                y="Category",
-                orientation="h",
-                title="Revenue by Category"
+                x="Category",
+                y="Amount",
+                title="Revenue by Category",
+                text_auto=".2s"
             )
-
 
             fig_category.update_layout(
                 template="plotly_white",
-                height=420,
-                margin=dict(
-                    l=20,
-                    r=20,
-                    t=60,
-                    b=20
-                )
+                height=400
             )
-
 
             st.plotly_chart(
                 fig_category,
                 use_container_width=True,
-                key="executive_category_revenue"
+                key="category_revenue_chart"
             )
 
-
-    # --------------------------------------------------------
-    # REVENUE BY SIZE
-    # --------------------------------------------------------
 
     with col2:
 
-        if (
-            "Size" in filtered_df.columns
-            and not filtered_df.empty
-        ):
+        if "Size" in filtered_df.columns:
 
             size_sales = (
                 filtered_df
-                .groupby(
-                    "Size",
-                    as_index=False
-                )["Amount"]
+                .groupby("Size", as_index=False)["Amount"]
                 .sum()
-                .sort_values(
-                    "Amount",
-                    ascending=False
-                )
+                .sort_values("Amount", ascending=False)
             )
-
 
             fig_size = px.bar(
                 size_sales,
                 x="Size",
                 y="Amount",
-                title="Revenue by Size"
+                title="Revenue by Size",
+                text_auto=".2s"
             )
-
 
             fig_size.update_layout(
                 template="plotly_white",
-                height=420,
-                margin=dict(
-                    l=20,
-                    r=20,
-                    t=60,
-                    b=20
-                )
+                height=400
             )
-
 
             st.plotly_chart(
                 fig_size,
                 use_container_width=True,
-                key="executive_size_revenue"
+                key="size_revenue_chart"
             )
 
 
@@ -1018,166 +990,111 @@ with tab2:
     st.markdown(
         """
         <div class="section-title">
-        Product Intelligence
+            Product Intelligence
         </div>
 
         <div class="section-subtitle">
-        Identify high-performing products and categories
+            Identify the products and categories contributing most to sales.
         </div>
         """,
         unsafe_allow_html=True
     )
 
 
-    col1, col2 = st.columns(2)
+    # Top products by revenue
+    if "SKU" in filtered_df.columns:
+
+        top_products = (
+            filtered_df
+            .groupby("SKU", as_index=False)["Amount"]
+            .sum()
+            .sort_values("Amount", ascending=False)
+            .head(10)
+        )
+
+        fig_top_products = px.bar(
+            top_products.sort_values("Amount"),
+            x="Amount",
+            y="SKU",
+            orientation="h",
+            title="Top 10 Products by Revenue",
+            text_auto=".2s"
+        )
+
+        fig_top_products.update_layout(
+            template="plotly_white",
+            height=500
+        )
+
+        st.plotly_chart(
+            fig_top_products,
+            use_container_width=True,
+            key="top_products_revenue_chart"
+        )
 
 
-    # --------------------------------------------------------
-    # TOP PRODUCTS
-    # --------------------------------------------------------
+    # Units by category
+    if "Category" in filtered_df.columns:
 
-    with col1:
+        units_category = (
+            filtered_df
+            .groupby("Category", as_index=False)["Qty"]
+            .sum()
+            .sort_values("Qty", ascending=False)
+        )
 
-        if (
-            "SKU" in filtered_df.columns
-            and not filtered_df.empty
-        ):
+        fig_units_category = px.bar(
+            units_category,
+            x="Category",
+            y="Qty",
+            title="Units Sold by Category",
+            text_auto=".2s"
+        )
 
-            top_products = (
-                filtered_df
-                .groupby(
-                    "SKU",
-                    as_index=False
-                )["Amount"]
-                .sum()
-                .sort_values(
-                    "Amount",
-                    ascending=False
-                )
-                .head(10)
-            )
+        fig_units_category.update_layout(
+            template="plotly_white",
+            height=400
+        )
 
-
-            fig_top_products = px.bar(
-                top_products,
-                x="Amount",
-                y="SKU",
-                orientation="h",
-                title="Top 10 Products by Revenue"
-            )
+        st.plotly_chart(
+            fig_units_category,
+            use_container_width=True,
+            key="category_units_chart"
+        )
 
 
-            fig_top_products.update_layout(
-                template="plotly_white",
-                height=450,
-                margin=dict(
-                    l=20,
-                    r=20,
-                    t=60,
-                    b=20
-                )
-            )
+    # Product performance table
+    if "SKU" in filtered_df.columns:
 
-
-            st.plotly_chart(
-                fig_top_products,
-                use_container_width=True,
-                key="product_top_revenue"
-            )
-
-
-    # --------------------------------------------------------
-    # CATEGORY DISTRIBUTION
-    # --------------------------------------------------------
-
-    with col2:
-
-        if (
-            "Category" in filtered_df.columns
-            and "Qty" in filtered_df.columns
-            and not filtered_df.empty
-        ):
-
-            category_quantity = (
-                filtered_df
-                .groupby(
-                    "Category",
-                    as_index=False
-                )["Qty"]
-                .sum()
-                .sort_values(
-                    "Qty",
-                    ascending=False
-                )
-                .head(10)
-            )
-
-
-            fig_category_qty = px.bar(
-                category_quantity,
-                x="Category",
-                y="Qty",
-                title="Units Sold by Category"
-            )
-
-
-            fig_category_qty.update_layout(
-                template="plotly_white",
-                height=450,
-                margin=dict(
-                    l=20,
-                    r=20,
-                    t=60,
-                    b=20
-                )
-            )
-
-
-            st.plotly_chart(
-                fig_category_qty,
-                use_container_width=True,
-                key="product_category_quantity"
-            )
-
-
-    # --------------------------------------------------------
-    # PRODUCT TABLE
-    # --------------------------------------------------------
-
-    if (
-        "SKU" in filtered_df.columns
-        and "Qty" in filtered_df.columns
-        and not filtered_df.empty
-    ):
-
-        product_summary = (
+        product_table = (
             filtered_df
             .groupby("SKU")
             .agg(
                 Revenue=("Amount", "sum"),
                 Units=("Qty", "sum")
             )
-            .reset_index()
-            .sort_values(
-                "Revenue",
-                ascending=False
-            )
+            .sort_values("Revenue", ascending=False)
             .head(20)
+            .reset_index()
         )
 
+        product_table["Revenue"] = product_table["Revenue"].round(2)
 
         st.markdown(
             """
             <div class="section-title">
-            Product Performance
+                Product Performance
+            </div>
+
+            <div class="section-subtitle">
+                Top 20 products ranked by revenue.
             </div>
             """,
             unsafe_allow_html=True
         )
 
-
         st.dataframe(
-            product_summary,
+            product_table,
             use_container_width=True,
             hide_index=True
         )
@@ -1192,11 +1109,11 @@ with tab3:
     st.markdown(
         """
         <div class="section-title">
-        Operations
+            Operations & Customer Insights
         </div>
 
         <div class="section-subtitle">
-        Monitor fulfilment and courier performance
+            Analyze delivery status, customer segments, and geographic performance.
         </div>
         """,
         unsafe_allow_html=True
@@ -1206,142 +1123,105 @@ with tab3:
     col1, col2 = st.columns(2)
 
 
-    # --------------------------------------------------------
-    # COURIER STATUS
-    # --------------------------------------------------------
-
+    # Courier Status
     with col1:
 
-        if (
-            "Courier Status" in filtered_df.columns
-            and not filtered_df.empty
-        ):
+        if "Courier Status" in filtered_df.columns:
 
             courier_data = (
-                filtered_df[
-                    "Courier Status"
-                ]
+                filtered_df["Courier Status"]
                 .value_counts()
                 .reset_index()
             )
 
-
             courier_data.columns = [
                 "Courier Status",
-                "Orders"
+                "Count"
             ]
-
 
             fig_courier = px.pie(
                 courier_data,
                 names="Courier Status",
-                values="Orders",
+                values="Count",
                 hole=0.55,
                 title="Courier Status Distribution"
             )
 
-
             fig_courier.update_layout(
                 template="plotly_white",
-                height=430
+                height=400
             )
-
 
             st.plotly_chart(
                 fig_courier,
                 use_container_width=True,
-                key="operations_courier_status"
+                key="courier_status_chart"
             )
 
 
-    # --------------------------------------------------------
-    # CUSTOMER TYPE
-    # --------------------------------------------------------
-
+    # Customer Type
     with col2:
 
-        if not filtered_df.empty:
+        customer_data = (
+            filtered_df["Customer Type"]
+            .value_counts()
+            .reset_index()
+        )
 
-            customer_data = (
-                filtered_df[
-                    "Customer Type"
-                ]
-                .value_counts()
-                .reset_index()
-            )
+        customer_data.columns = [
+            "Customer Type",
+            "Count"
+        ]
 
+        fig_customer = px.pie(
+            customer_data,
+            names="Customer Type",
+            values="Count",
+            hole=0.55,
+            title="Customer Type Distribution"
+        )
 
-            customer_data.columns = [
-                "Customer Type",
-                "Orders"
-            ]
+        fig_customer.update_layout(
+            template="plotly_white",
+            height=400
+        )
 
-
-            fig_customer = px.pie(
-                customer_data,
-                names="Customer Type",
-                values="Orders",
-                hole=0.55,
-                title="Customer Type Distribution"
-            )
-
-
-            fig_customer.update_layout(
-                template="plotly_white",
-                height=430
-            )
-
-
-            st.plotly_chart(
-                fig_customer,
-                use_container_width=True,
-                key="operations_customer_type"
-            )
+        st.plotly_chart(
+            fig_customer,
+            use_container_width=True,
+            key="customer_type_chart"
+        )
 
 
-    # --------------------------------------------------------
-    # STATE ANALYSIS
-    # --------------------------------------------------------
-
-    if (
-        "ship-state" in filtered_df.columns
-        and not filtered_df.empty
-    ):
+    # Top states
+    if "ship-state" in filtered_df.columns:
 
         state_sales = (
             filtered_df
-            .groupby(
-                "ship-state",
-                as_index=False
-            )["Amount"]
+            .groupby("ship-state", as_index=False)["Amount"]
             .sum()
-            .sort_values(
-                "Amount",
-                ascending=False
-            )
-            .head(15)
+            .sort_values("Amount", ascending=False)
+            .head(10)
         )
 
-
-        fig_state = px.bar(
-            state_sales,
+        fig_states = px.bar(
+            state_sales.sort_values("Amount"),
             x="Amount",
             y="ship-state",
             orientation="h",
-            title="Top States by Revenue"
+            title="Top 10 States by Revenue",
+            text_auto=".2s"
         )
 
-
-        fig_state.update_layout(
+        fig_states.update_layout(
             template="plotly_white",
             height=500
         )
 
-
         st.plotly_chart(
-            fig_state,
+            fig_states,
             use_container_width=True,
-            key="operations_state_revenue"
+            key="top_states_chart"
         )
 
 
@@ -1354,215 +1234,159 @@ with tab4:
     st.markdown(
         """
         <div class="section-title">
-        Deep Analysis
+            Deep Analysis
         </div>
 
         <div class="section-subtitle">
-        Additional analytical insights from the selected data
+            Explore trends, relationships, and statistical patterns in the data.
         </div>
         """,
         unsafe_allow_html=True
     )
 
 
-    if filtered_df.empty:
+    # --------------------------------------------------------
+    # MONTHLY REVENUE
+    # --------------------------------------------------------
 
-        st.warning(
-            "No records available for the selected filters."
-        )
+    monthly_df = filtered_df.copy()
+
+    monthly_df["Month"] = (
+        monthly_df["Date"]
+        .dt.to_period("M")
+        .astype(str)
+    )
+
+    monthly_sales = (
+        monthly_df
+        .groupby("Month", as_index=False)["Amount"]
+        .sum()
+    )
+
+    fig_monthly = px.bar(
+        monthly_sales,
+        x="Month",
+        y="Amount",
+        title="Monthly Revenue"
+    )
+
+    fig_monthly.update_layout(
+        template="plotly_white",
+        height=400
+    )
+
+    st.plotly_chart(
+        fig_monthly,
+        use_container_width=True,
+        key="monthly_revenue_chart"
+    )
 
 
-    else:
+    # --------------------------------------------------------
+    # QUANTITY VS AMOUNT
+    # --------------------------------------------------------
 
-        # ====================================================
-        # MONTHLY SALES
-        # ====================================================
+    scatter_df = filtered_df[
+        ["Qty", "Amount"]
+    ].copy()
 
-        monthly_data = (
-            filtered_df
-            .assign(
-                Month=filtered_df[
-                    "Date"
-                ]
-                .dt
-                .to_period("M")
+    scatter_df = scatter_df[
+        (scatter_df["Qty"] >= 0) &
+        (scatter_df["Amount"] >= 0)
+    ]
+
+    fig_scatter = px.scatter(
+        scatter_df,
+        x="Qty",
+        y="Amount",
+        title="Quantity vs Revenue",
+        opacity=0.55,
+        trendline=None
+    )
+
+    fig_scatter.update_layout(
+        template="plotly_white",
+        height=450
+    )
+
+    st.plotly_chart(
+        fig_scatter,
+        use_container_width=True,
+        key="quantity_amount_scatter"
+    )
+
+
+    # ========================================================
+    # CORRELATION ANALYSIS
+    # ========================================================
+
+    st.markdown(
+        """
+        <div class="section-title">
+            Correlation Analysis
+        </div>
+
+        <div class="section-subtitle">
+            Explore relationships between quantity, revenue, and B2B transactions.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    correlation_columns = []
+
+    if "Qty" in filtered_df.columns:
+        correlation_columns.append("Qty")
+
+    if "Amount" in filtered_df.columns:
+        correlation_columns.append("Amount")
+
+    if "B2B" in filtered_df.columns:
+        correlation_columns.append("B2B")
+
+
+    if len(correlation_columns) >= 2:
+
+        correlation_df = filtered_df[
+            correlation_columns
+        ].copy()
+
+
+        # Convert B2B into numeric values
+        if "B2B" in correlation_df.columns:
+
+            correlation_df["B2B"] = (
+                correlation_df["B2B"]
                 .astype(str)
-            )
-            .groupby(
-                "Month",
-                as_index=False
-            )["Amount"]
-            .sum()
-        )
-
-
-        fig_monthly = px.bar(
-            monthly_data,
-            x="Month",
-            y="Amount",
-            title="Monthly Revenue"
-        )
-
-
-        fig_monthly.update_layout(
-            template="plotly_white",
-            height=430
-        )
-
-
-        st.plotly_chart(
-            fig_monthly,
-            use_container_width=True,
-            key="deep_monthly_revenue"
-        )
-
-
-        # ====================================================
-        # REVENUE VS QUANTITY
-        # ====================================================
-
-        if "Qty" in filtered_df.columns:
-
-            analysis_df = (
-                filtered_df
-                .groupby(
-                    "Date",
-                    as_index=False
-                )
-                .agg(
-                    Revenue=("Amount", "sum"),
-                    Quantity=("Qty", "sum")
-                )
+                .str.lower()
+                .map({
+                    "true": 1,
+                    "false": 0,
+                    "1": 1,
+                    "0": 0,
+                    "yes": 1,
+                    "no": 0
+                })
             )
 
 
-            fig_scatter = px.scatter(
-                analysis_df,
-                x="Quantity",
-                y="Revenue",
-                title="Revenue vs Quantity",
-                trendline=None
+        # Convert numeric columns
+        for column in correlation_df.columns:
+
+            correlation_df[column] = pd.to_numeric(
+                correlation_df[column],
+                errors="coerce"
             )
 
 
-            fig_scatter.update_layout(
-                template="plotly_white",
-                height=430
-            )
+        correlation_df = correlation_df.dropna()
 
 
-            st.plotly_chart(
-                fig_scatter,
-                use_container_width=True,
-                key="deep_revenue_quantity"
-            )
+        if not correlation_df.empty:
 
+            correlation_matrix = correlation_df.corr()
 
-        # ====================================================
-        # CORRELATION ANALYSIS
-        # ====================================================
-
-        st.markdown(
-            """
-            <div class="section-title">
-            🔗 Correlation Analysis
-            </div>
-
-            <div class="section-subtitle">
-            Relationship between important numerical variables
-            </div>
-            """,
-            unsafe_allow_html=True
-        )
-
-
-        # ----------------------------------------------------
-        # SELECT NUMERICAL COLUMNS
-        # ----------------------------------------------------
-
-        correlation_columns = []
-
-
-        if "Qty" in filtered_df.columns:
-
-            correlation_columns.append("Qty")
-
-
-        if "Amount" in filtered_df.columns:
-
-            correlation_columns.append("Amount")
-
-
-        if "B2B" in filtered_df.columns:
-
-            correlation_columns.append("B2B")
-
-
-        # ----------------------------------------------------
-        # CREATE CORRELATION MATRIX
-        # ----------------------------------------------------
-
-        if len(correlation_columns) >= 2:
-
-            correlation_df = filtered_df[
-                correlation_columns
-            ].copy()
-
-
-            # ------------------------------------------------
-            # CONVERT B2B INTO 1 / 0
-            # ------------------------------------------------
-
-            if "B2B" in correlation_df.columns:
-
-                correlation_df["B2B"] = (
-                    correlation_df["B2B"]
-                    .astype(str)
-                    .str.lower()
-                    .map(
-                        {
-                            "true": 1,
-                            "false": 0,
-                            "1": 1,
-                            "0": 0,
-                            "yes": 1,
-                            "no": 0
-                        }
-                    )
-                )
-
-
-            # ------------------------------------------------
-            # CONVERT ALL SELECTED COLUMNS TO NUMERIC
-            # ------------------------------------------------
-
-            for column in correlation_df.columns:
-
-                correlation_df[column] = pd.to_numeric(
-                    correlation_df[column],
-                    errors="coerce"
-                )
-
-
-            # ------------------------------------------------
-            # REMOVE INVALID ROWS
-            # ------------------------------------------------
-
-            correlation_df = correlation_df.dropna()
-
-
-            # ------------------------------------------------
-            # CALCULATE CORRELATION
-            # ------------------------------------------------
-
-            correlation_matrix = (
-                correlation_df.corr()
-            )
-
-
-            # ------------------------------------------------
-            # CREATE HEATMAP
-            # ------------------------------------------------
 
             fig_corr = px.imshow(
                 correlation_matrix,
@@ -1571,22 +1395,10 @@ with tab4:
                 title="Correlation Heatmap"
             )
 
-
             fig_corr.update_layout(
                 template="plotly_white",
-                height=450,
-                margin=dict(
-                    l=20,
-                    r=20,
-                    t=60,
-                    b=20
-                )
+                height=450
             )
-
-
-            # ------------------------------------------------
-            # DISPLAY HEATMAP
-            # ------------------------------------------------
 
             st.plotly_chart(
                 fig_corr,
@@ -1595,19 +1407,30 @@ with tab4:
             )
 
 
-            # ------------------------------------------------
-            # SHOW CORRELATION VALUES
-            # ------------------------------------------------
+            st.info(
+                """
+                **How to read correlation:**
 
+                • **+1.00** → Strong positive relationship
+
+                • **0.00** → Little or no linear relationship
+
+                • **-1.00** → Strong negative relationship
+
+                Remember: correlation shows association, not causation.
+                """
+            )
+
+
+            # Show correlation values
             st.markdown(
                 """
                 <div class="section-title">
-                Correlation Values
+                    Correlation Values
                 </div>
                 """,
                 unsafe_allow_html=True
             )
-
 
             st.dataframe(
                 correlation_matrix.round(2),
@@ -1615,257 +1438,143 @@ with tab4:
             )
 
 
-            # ------------------------------------------------
-            # EXPLANATION
-            # ------------------------------------------------
+    # ========================================================
+    # SUMMARY STATISTICS
+    # ========================================================
 
-            st.info(
-                """
-                **How to interpret correlation:**
+    st.markdown(
+        """
+        <div class="section-title">
+            Summary Statistics
+        </div>
 
-                • +1.00 → Strong positive relationship
-
-                • 0.00 → Little or no linear relationship
-
-                • -1.00 → Strong negative relationship
-
-                **Important:** Correlation shows association,
-                not causation.
-                """
-            )
+        <div class="section-subtitle">
+            Key calculated metrics for the currently selected data.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
-        else:
+    avg_order_value = (
+        total_revenue / total_orders
+        if total_orders > 0
+        else 0
+    )
 
-            st.info(
-                "Not enough numerical columns available "
-                "for correlation analysis."
-            )
+    revenue_per_unit = (
+        total_revenue / total_units
+        if total_units > 0
+        else 0
+    )
+
+    stat1, stat2, stat3 = st.columns(3)
 
 
-        # ====================================================
-        # SUMMARY STATISTICS
-        # ====================================================
+    with stat1:
 
         st.markdown(
-            """
-            <div class="section-title">
-            Selected Dataset Summary
+            f"""
+            <div class="insight-card">
+
+                <div class="insight-title">
+                    Average Order Value
+                </div>
+
+                <div class="insight-value">
+                    ₹{avg_order_value:,.2f}
+                </div>
+
             </div>
             """,
             unsafe_allow_html=True
         )
 
 
-        summary1, summary2, summary3 = st.columns(3)
+    with stat2:
 
+        st.markdown(
+            f"""
+            <div class="insight-card">
 
-        # ----------------------------------------------------
-        # AVERAGE ORDER VALUE
-        # ----------------------------------------------------
+                <div class="insight-title">
+                    Revenue per Unit
+                </div>
 
-        average_order_value = (
-            total_revenue / total_orders
-            if total_orders > 0
-            else 0
+                <div class="insight-value">
+                    ₹{revenue_per_unit:,.2f}
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
 
-        # ----------------------------------------------------
-        # REVENUE PER UNIT
-        # ----------------------------------------------------
+    with stat3:
 
-        revenue_per_unit = (
-            total_revenue / total_units
-            if total_units > 0
-            else 0
+        st.markdown(
+            f"""
+            <div class="insight-card">
+
+                <div class="insight-title">
+                    Records Analyzed
+                </div>
+
+                <div class="insight-value">
+                    {len(filtered_df):,}
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
         )
-
-
-        with summary1:
-
-            st.metric(
-                "Average Order Value",
-                format_currency(
-                    average_order_value
-                )
-            )
-
-
-        with summary2:
-
-            st.metric(
-                "Revenue per Unit",
-                format_currency(
-                    revenue_per_unit
-                )
-            )
-
-
-        with summary3:
-
-            st.metric(
-                "Records Analyzed",
-                f"{len(filtered_df):,}"
-            )
 
 
 # ============================================================
-# DYNAMIC INSIGHTS
+# DYNAMIC BUSINESS INSIGHTS
 # ============================================================
 
 st.markdown(
     """
     <div class="section-title">
-    💡 Key Insights
+        💡 Key Business Insights
     </div>
 
     <div class="section-subtitle">
-    Automatically generated from the currently selected filters
+        Automatically generated insights based on the selected filters.
     </div>
     """,
     unsafe_allow_html=True
 )
 
 
-if not filtered_df.empty:
+insight1, insight2, insight3 = st.columns(3)
 
 
-    # ========================================================
-    # TOP CATEGORY
-    # ========================================================
+# Top category
+with insight1:
 
-    if "Category" in filtered_df.columns:
+    if "Category" in filtered_df.columns and not filtered_df.empty:
 
-        category_summary = (
+        top_category = (
             filtered_df
             .groupby("Category")["Amount"]
             .sum()
-            .sort_values(
-                ascending=False
-            )
+            .idxmax()
         )
-
-
-        if not category_summary.empty:
-
-            top_category = (
-                category_summary.index[0]
-            )
-
-
-            top_category_value = (
-                category_summary.iloc[0]
-            )
-
-
-            st.markdown(
-                f"""
-                <div class="insight-card">
-
-                <div class="insight-title">
-                🏆 Top Revenue Category
-                </div>
-
-                <div class="insight-text">
-                <b>{top_category}</b>
-                generated
-                <b>{format_currency(top_category_value)}</b>
-                in revenue for the selected filters.
-                </div>
-
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-
-    # ========================================================
-    # TOP PRODUCT
-    # ========================================================
-
-    if "SKU" in filtered_df.columns:
-
-        sku_summary = (
-            filtered_df
-            .groupby("SKU")["Amount"]
-            .sum()
-            .sort_values(
-                ascending=False
-            )
-        )
-
-
-        if not sku_summary.empty:
-
-            top_sku = (
-                sku_summary.index[0]
-            )
-
-
-            top_sku_value = (
-                sku_summary.iloc[0]
-            )
-
-
-            st.markdown(
-                f"""
-                <div class="insight-card">
-
-                <div class="insight-title">
-                ⭐ Highest Revenue Product
-                </div>
-
-                <div class="insight-text">
-                SKU <b>{top_sku}</b> generated
-                <b>{format_currency(top_sku_value)}</b>
-                in revenue within the selected data.
-                </div>
-
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-
-    # ========================================================
-    # CUSTOMER INSIGHT
-    # ========================================================
-
-    customer_summary = (
-        filtered_df[
-            "Customer Type"
-        ]
-        .value_counts()
-    )
-
-
-    if not customer_summary.empty:
-
-        dominant_customer = (
-            customer_summary.index[0]
-        )
-
-
-        dominant_customer_count = (
-            customer_summary.iloc[0]
-        )
-
 
         st.markdown(
             f"""
             <div class="insight-card">
 
-            <div class="insight-title">
-            👥 Dominant Customer Segment
-            </div>
+                <div class="insight-title">
+                    🏆 Top Revenue Category
+                </div>
 
-            <div class="insight-text">
-            <b>{dominant_customer}</b>
-            represents the largest customer segment
-            with <b>{dominant_customer_count:,}</b>
-            records in the selected data.
-            </div>
+                <div class="insight-value">
+                    {top_category}
+                </div>
 
             </div>
             """,
@@ -1873,12 +1582,63 @@ if not filtered_df.empty:
         )
 
 
-else:
+# Highest revenue product
+with insight2:
 
-    st.info(
-        "No insights available because no records "
-        "match the selected filters."
-    )
+    if "SKU" in filtered_df.columns and not filtered_df.empty:
+
+        top_product = (
+            filtered_df
+            .groupby("SKU")["Amount"]
+            .sum()
+            .idxmax()
+        )
+
+        st.markdown(
+            f"""
+            <div class="insight-card">
+
+                <div class="insight-title">
+                    ⭐ Highest Revenue Product
+                </div>
+
+                <div class="insight-value">
+                    {top_product}
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+# Dominant customer segment
+with insight3:
+
+    if not filtered_df.empty:
+
+        dominant_customer = (
+            filtered_df["Customer Type"]
+            .value_counts()
+            .idxmax()
+        )
+
+        st.markdown(
+            f"""
+            <div class="insight-card">
+
+                <div class="insight-title">
+                    👥 Dominant Customer Segment
+                </div>
+
+                <div class="insight-value">
+                    {dominant_customer}
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
 
 # ============================================================
@@ -1887,11 +1647,19 @@ else:
 
 st.markdown(
     """
-    <div class="footer">
+    <div class="dashboard-footer">
 
-    Amazon Sales Intelligence Dashboard
-    &nbsp;•&nbsp;
-    Built with Python, Pandas, Plotly and Streamlit
+        <span class="footer-brand">
+            Amazon Sales Intelligence
+        </span>
+
+        &nbsp;•&nbsp;
+
+        Interactive Sales Analytics Dashboard
+
+        <br><br>
+
+        Built with Python, Pandas, Plotly & Streamlit
 
     </div>
     """,
