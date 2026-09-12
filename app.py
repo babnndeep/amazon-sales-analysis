@@ -1356,6 +1356,257 @@ with tab4:
         )
 
 
+
+# ============================================================
+# ADDITIONAL NOTEBOOK VISUALIZATIONS
+# ============================================================
+
+st.markdown(
+    '<div class="section-header">📈 Additional Notebook Visualizations</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="section-description">'
+    'Additional visualizations from the exploratory notebook, '
+    'shown interactively using the current dashboard filters.'
+    '</div>',
+    unsafe_allow_html=True
+)
+
+# ------------------------------------------------------------
+# 1. MONTHLY REVENUE — LINE CHART
+# ------------------------------------------------------------
+
+monthly_chart_df = filtered_df.copy()
+
+if not monthly_chart_df.empty and "Date" in monthly_chart_df.columns:
+    monthly_chart_df["Month"] = (
+        monthly_chart_df["Date"]
+        .dt.to_period("M")
+        .astype(str)
+    )
+
+    monthly_line = (
+        monthly_chart_df
+        .groupby("Month", as_index=False)["Amount"]
+        .sum()
+    )
+
+    fig_monthly_line = px.line(
+        monthly_line,
+        x="Month",
+        y="Amount",
+        markers=True,
+        title="Monthly Revenue Trend"
+    )
+
+    fig_monthly_line.update_layout(
+        template="plotly_white",
+        xaxis_title="Month",
+        yaxis_title="Revenue (₹)",
+        height=420,
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
+
+    st.plotly_chart(
+        fig_monthly_line,
+        use_container_width=True,
+        key="notebook_monthly_line_chart"
+    )
+
+# ------------------------------------------------------------
+# 2. ORDER AMOUNT DISTRIBUTION — HISTOGRAM
+# ------------------------------------------------------------
+
+if "Amount" in filtered_df.columns and not filtered_df.empty:
+
+    fig_amount_hist = px.histogram(
+        filtered_df,
+        x="Amount",
+        nbins=30,
+        title="Distribution of Order Amounts"
+    )
+
+    fig_amount_hist.update_layout(
+        template="plotly_white",
+        xaxis_title="Order Amount (₹)",
+        yaxis_title="Number of Orders",
+        height=420,
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
+
+    st.plotly_chart(
+        fig_amount_hist,
+        use_container_width=True,
+        key="notebook_amount_histogram"
+    )
+
+# ------------------------------------------------------------
+# 3. ORDER STATUS — DONUT CHART
+# ------------------------------------------------------------
+
+if "Status" in filtered_df.columns and not filtered_df.empty:
+
+    status_data = (
+        filtered_df["Status"]
+        .value_counts()
+        .reset_index()
+    )
+
+    status_data.columns = ["Status", "Count"]
+
+    fig_status_donut = px.pie(
+        status_data,
+        names="Status",
+        values="Count",
+        hole=0.50,
+        title="Order Status Distribution"
+    )
+
+    fig_status_donut.update_layout(
+        template="plotly_white",
+        height=450,
+        margin=dict(l=20, r=20, t=60, b=20)
+    )
+
+    st.plotly_chart(
+        fig_status_donut,
+        use_container_width=True,
+        key="notebook_status_donut"
+    )
+
+# ------------------------------------------------------------
+# 4. CATEGORY × SIZE — HEATMAP
+# ------------------------------------------------------------
+
+if (
+    "Category" in filtered_df.columns
+    and "Size" in filtered_df.columns
+    and "Qty" in filtered_df.columns
+    and not filtered_df.empty
+):
+
+    category_size = pd.pivot_table(
+        filtered_df,
+        values="Qty",
+        index="Category",
+        columns="Size",
+        aggfunc="sum",
+        fill_value=0
+    )
+
+    if not category_size.empty:
+
+        fig_category_size = px.imshow(
+            category_size,
+            text_auto=".0f",
+            aspect="auto",
+            title="Quantity Sold by Category and Size"
+        )
+
+        fig_category_size.update_layout(
+            template="plotly_white",
+            xaxis_title="Size",
+            yaxis_title="Category",
+            height=520,
+            margin=dict(l=20, r=20, t=60, b=20)
+        )
+
+        st.plotly_chart(
+            fig_category_size,
+            use_container_width=True,
+            key="notebook_category_size_heatmap"
+        )
+
+# ------------------------------------------------------------
+# 5. CUMULATIVE REVENUE — AREA CHART
+# ------------------------------------------------------------
+
+if "Date" in filtered_df.columns and "Amount" in filtered_df.columns:
+    cumulative_df = (
+        filtered_df
+        .groupby("Date", as_index=False)["Amount"]
+        .sum()
+        .sort_values("Date")
+    )
+
+    if not cumulative_df.empty:
+        cumulative_df["Cumulative Revenue"] = (
+            cumulative_df["Amount"].cumsum()
+        )
+
+        fig_cumulative = px.area(
+            cumulative_df,
+            x="Date",
+            y="Cumulative Revenue",
+            title="Cumulative Revenue Growth"
+        )
+
+        fig_cumulative.update_layout(
+            template="plotly_white",
+            xaxis_title="Date",
+            yaxis_title="Cumulative Revenue (₹)",
+            height=420,
+            margin=dict(l=20, r=20, t=60, b=20)
+        )
+
+        st.plotly_chart(
+            fig_cumulative,
+            use_container_width=True,
+            key="notebook_cumulative_area"
+        )
+
+# ------------------------------------------------------------
+# 6. ORDER AMOUNT — BOX PLOT
+# ------------------------------------------------------------
+
+if (
+    "Category" in filtered_df.columns
+    and "Amount" in filtered_df.columns
+    and not filtered_df.empty
+):
+
+    box_df = filtered_df[
+        ["Category", "Amount"]
+    ].dropna().copy()
+
+    # Limit the number of categories for readability.
+    top_box_categories = (
+        box_df.groupby("Category")["Amount"]
+        .sum()
+        .nlargest(10)
+        .index
+    )
+
+    box_df = box_df[
+        box_df["Category"].isin(top_box_categories)
+    ]
+
+    if not box_df.empty:
+
+        fig_box = px.box(
+            box_df,
+            x="Category",
+            y="Amount",
+            points=False,
+            title="Order Amount Distribution by Category"
+        )
+
+        fig_box.update_layout(
+            template="plotly_white",
+            xaxis_title="Category",
+            yaxis_title="Order Amount (₹)",
+            height=500,
+            margin=dict(l=20, r=20, t=60, b=20)
+        )
+
+        st.plotly_chart(
+            fig_box,
+            use_container_width=True,
+            key="notebook_amount_boxplot"
+        )
+
 # ============================================================
 # BUSINESS INSIGHTS
 # ============================================================
