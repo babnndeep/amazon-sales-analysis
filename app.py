@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plotly.graph_objects as go
-import textwrap
 
 
 # ============================================================
@@ -19,436 +17,315 @@ st.set_page_config(
 
 
 # ============================================================
-# ENHANCED PROFESSIONAL CSS
+# PROFESSIONAL CSS
 # ============================================================
 
 st.markdown("""
 <style>
 
-/* -----------------------------------------------------------
-   GLOBAL PAGE
------------------------------------------------------------ */
-
-.stApp {
-    background: linear-gradient(135deg, #f5f7fb 0%, #eef2f7 100%);
-    color: #172033;
-}
-
-.main .block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-    max-width: 1500px;
-}
-
-
-/* -----------------------------------------------------------
-   MAIN HEADER
------------------------------------------------------------ */
-
-.dashboard-header {
-    background: linear-gradient(
-        135deg,
-        #111827 0%,
-        #1e293b 55%,
-        #334155 100%
-    );
-
-    padding: 32px 36px;
-    border-radius: 22px;
-    margin-bottom: 28px;
-
-    box-shadow:
-        0 15px 35px rgba(15, 23, 42, 0.18);
-
-    position: relative;
-    overflow: hidden;
-}
-
-.dashboard-header::before {
-    content: "";
-    position: absolute;
-    width: 260px;
-    height: 260px;
-    border-radius: 50%;
-    background: rgba(249, 115, 22, 0.12);
-    top: -120px;
-    right: -60px;
-}
-
-.dashboard-header::after {
-    content: "";
-    position: absolute;
-    width: 180px;
-    height: 180px;
-    border-radius: 50%;
-    background: rgba(59, 130, 246, 0.08);
-    bottom: -100px;
-    left: 35%;
-}
-
-.dashboard-title {
-    color: white;
-    font-size: 38px;
-    font-weight: 800;
-    margin: 0;
-    position: relative;
-    z-index: 2;
-    letter-spacing: -1px;
-}
-
-.dashboard-subtitle {
-    color: #cbd5e1;
-    font-size: 16px;
-    margin-top: 8px;
-    position: relative;
-    z-index: 2;
-}
-
-.header-badge {
-    display: inline-block;
-    margin-top: 18px;
-    padding: 7px 15px;
-    border-radius: 30px;
-    background: rgba(249, 115, 22, 0.16);
-    border: 1px solid rgba(249, 115, 22, 0.35);
-    color: #fed7aa;
-    font-size: 13px;
-    font-weight: 600;
-    position: relative;
-    z-index: 2;
-}
-
-
-/* -----------------------------------------------------------
-   SIDEBAR
------------------------------------------------------------ */
-
-section[data-testid="stSidebar"] {
-    background: linear-gradient(
-        180deg,
-        #ffffff 0%,
-        #f8fafc 100%
-    );
-
-    border-right: 1px solid #e2e8f0;
-}
-
-section[data-testid="stSidebar"] > div {
-    padding-top: 2rem;
-}
-
-.sidebar-title {
-    font-size: 23px;
-    font-weight: 800;
-    color: #111827;
-    margin-bottom: 5px;
-}
-
-.sidebar-subtitle {
-    font-size: 13px;
-    color: #64748b;
-    margin-bottom: 25px;
-}
-
-.filter-heading {
-    color: #334155;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.7px;
-    margin-top: 20px;
-    margin-bottom: 8px;
-}
-
-
-/* -----------------------------------------------------------
-   KPI CARDS
------------------------------------------------------------ */
-
-.kpi-card {
-    background: rgba(255, 255, 255, 0.96);
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-
-    padding: 22px 22px 20px 22px;
-
-    min-height: 145px;
-
-    box-shadow:
-        0 7px 20px rgba(15, 23, 42, 0.06);
-
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease,
-        border-color 0.25s ease;
-
-    position: relative;
-    overflow: hidden;
-}
-
-.kpi-card:hover {
-    transform: translateY(-5px);
-
-    box-shadow:
-        0 15px 30px rgba(15, 23, 42, 0.12);
-
-    border-color: #cbd5e1;
-}
-
-.kpi-card::after {
-    content: "";
-    position: absolute;
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    right: -35px;
-    top: -35px;
-    background: rgba(249, 115, 22, 0.07);
-}
-
-.kpi-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.7px;
-}
-
-.kpi-value {
-    font-size: 30px;
-    font-weight: 800;
-    color: #111827;
-    margin-top: 10px;
-    line-height: 1.1;
-}
-
-.kpi-description {
-    font-size: 12px;
-    color: #94a3b8;
-    margin-top: 10px;
-}
-
-
-/* -----------------------------------------------------------
-   SECTION HEADINGS
------------------------------------------------------------ */
-
-.section-title {
-    font-size: 24px;
-    font-weight: 800;
-    color: #172033;
-    margin-top: 25px;
-    margin-bottom: 5px;
-}
-
-.section-subtitle {
-    font-size: 14px;
-    color: #64748b;
-    margin-bottom: 18px;
-}
-
-
-/* -----------------------------------------------------------
-   CHART CONTAINER
------------------------------------------------------------ */
-
-.chart-card {
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 18px;
-
-    padding: 18px;
-
-    box-shadow:
-        0 6px 18px rgba(15, 23, 42, 0.05);
-
-    margin-bottom: 20px;
-}
-
-
-/* -----------------------------------------------------------
-   INSIGHT CARDS
------------------------------------------------------------ */
-
-.insight-card {
-    background: linear-gradient(
-        135deg,
-        #fff7ed 0%,
-        #ffffff 100%
-    );
-
-    border: 1px solid #fed7aa;
-    border-left: 5px solid #f97316;
-
-    border-radius: 14px;
-
-    padding: 18px 20px;
-
-    margin-top: 10px;
-
-    box-shadow:
-        0 6px 16px rgba(249, 115, 22, 0.06);
-}
-
-.insight-title {
-    font-size: 13px;
-    color: #9a3412;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.insight-value {
-    font-size: 20px;
-    color: #172033;
-    font-weight: 800;
-    margin-top: 5px;
-}
-
-
-/* -----------------------------------------------------------
-   TABS
------------------------------------------------------------ */
-
-button[data-baseweb="tab"] {
-    font-size: 14px;
-    font-weight: 700;
-    color: #64748b;
-    padding: 12px 20px;
-}
-
-button[data-baseweb="tab"][aria-selected="true"] {
-    color: #ea580c;
-}
-
-div[data-baseweb="tab-highlight"] {
-    background-color: #f97316;
-    height: 3px;
-    border-radius: 3px;
-}
-
-
-/* -----------------------------------------------------------
-   DATAFRAME / TABLE
------------------------------------------------------------ */
-
-div[data-testid="stDataFrame"] {
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid #e2e8f0;
-}
-
-
-/* -----------------------------------------------------------
-   BUTTONS
------------------------------------------------------------ */
-
-.stButton > button {
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.stButton > button:hover {
-    border-color: #f97316;
-    color: #ea580c;
-}
-
-
-/* -----------------------------------------------------------
-   SELECTBOX
------------------------------------------------------------ */
-
-div[data-baseweb="select"] > div {
-    border-radius: 10px;
-    border-color: #e2e8f0;
-    background-color: white;
-}
-
-
-/* -----------------------------------------------------------
-   DATE INPUT
------------------------------------------------------------ */
-
-div[data-testid="stDateInput"] input {
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-}
-
-
-/* -----------------------------------------------------------
-   INFO MESSAGE
------------------------------------------------------------ */
-
-div[data-testid="stAlert"] {
-    border-radius: 12px;
-}
-
-
-/* -----------------------------------------------------------
-   FOOTER
------------------------------------------------------------ */
-
-.dashboard-footer {
-    margin-top: 40px;
-    padding: 22px;
-
-    text-align: center;
-
-    border-top: 1px solid #e2e8f0;
-
-    color: #94a3b8;
-
-    font-size: 12px;
-}
-
-.footer-brand {
-    color: #475569;
-    font-weight: 700;
-}
-
-
-/* -----------------------------------------------------------
-   HIDE STREAMLIT DEFAULT ELEMENTS
------------------------------------------------------------ */
-
-#MainMenu {
-    visibility: hidden;
-}
-
-footer {
-    visibility: hidden;
-}
-
-header {
-    background: transparent !important;
-}
-
-
-/* -----------------------------------------------------------
-   MOBILE RESPONSIVENESS
------------------------------------------------------------ */
-
-@media (max-width: 768px) {
-
-    .dashboard-title {
-        font-size: 28px;
-    }
-
-    .dashboard-header {
-        padding: 25px;
-    }
-
-    .kpi-value {
-        font-size: 24px;
+    /* ======================================================
+       MAIN APPLICATION
+    ====================================================== */
+
+    .stApp {
+        background: #f4f7fb;
     }
 
     .main .block-container {
-        padding-left: 1rem;
-        padding-right: 1rem;
+        max-width: 1500px;
+        padding-top: 2rem;
+        padding-bottom: 3rem;
     }
-}
+
+
+    /* ======================================================
+       SIDEBAR
+    ====================================================== */
+
+    section[data-testid="stSidebar"] {
+        background: #ffffff;
+        border-right: 1px solid #e5e7eb;
+    }
+
+    section[data-testid="stSidebar"] > div {
+        padding-top: 2rem;
+    }
+
+    section[data-testid="stSidebar"] h1,
+    section[data-testid="stSidebar"] h2,
+    section[data-testid="stSidebar"] h3 {
+        color: #172033;
+    }
+
+    section[data-testid="stSidebar"] p {
+        color: #64748b;
+    }
+
+    section[data-testid="stSidebar"] label {
+        color: #334155 !important;
+        font-weight: 600 !important;
+    }
+
+
+    /* ======================================================
+       MAIN TITLE
+    ====================================================== */
+
+    .main-title {
+        font-size: 38px;
+        font-weight: 800;
+        color: #172033;
+        letter-spacing: -1px;
+        margin-bottom: 5px;
+    }
+
+    .main-subtitle {
+        color: #64748b;
+        font-size: 16px;
+        margin-bottom: 28px;
+    }
+
+
+    /* ======================================================
+       KPI CARDS
+    ====================================================== */
+
+    div[data-testid="stMetric"] {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        padding: 22px 22px 20px 22px;
+        box-shadow: 0 5px 18px rgba(15, 23, 42, 0.06);
+        transition: all 0.25s ease;
+        min-height: 135px;
+    }
+
+    div[data-testid="stMetric"]:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+        border-color: #cbd5e1;
+    }
+
+    div[data-testid="stMetricLabel"] {
+        color: #64748b !important;
+        font-size: 13px !important;
+        font-weight: 700 !important;
+    }
+
+    div[data-testid="stMetricValue"] {
+        color: #172033 !important;
+        font-size: 30px !important;
+        font-weight: 800 !important;
+    }
+
+
+    /* ======================================================
+       SECTION HEADINGS
+    ====================================================== */
+
+    .section-header {
+        font-size: 25px;
+        font-weight: 800;
+        color: #172033;
+        margin-top: 25px;
+        margin-bottom: 5px;
+    }
+
+    .section-description {
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 18px;
+    }
+
+
+    /* ======================================================
+       TABS
+    ====================================================== */
+
+    button[data-baseweb="tab"] {
+        font-size: 14px;
+        font-weight: 700;
+        color: #64748b;
+        padding: 13px 20px;
+    }
+
+    button[data-baseweb="tab"]:hover {
+        color: #ea580c;
+    }
+
+    button[data-baseweb="tab"][aria-selected="true"] {
+        color: #ea580c !important;
+    }
+
+    div[data-baseweb="tab-highlight"] {
+        background-color: #f97316 !important;
+        height: 3px !important;
+        border-radius: 5px;
+    }
+
+
+    /* ======================================================
+       SELECT BOXES
+    ====================================================== */
+
+    div[data-baseweb="select"] > div {
+        border-radius: 10px;
+        border-color: #e2e8f0;
+        background-color: #ffffff;
+    }
+
+    div[data-baseweb="select"] > div:hover {
+        border-color: #f97316;
+    }
+
+
+    /* ======================================================
+       DATE INPUT
+    ====================================================== */
+
+    div[data-testid="stDateInput"] input {
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+    }
+
+
+    /* ======================================================
+       MULTISELECT TAGS
+    ====================================================== */
+
+    span[data-baseweb="tag"] {
+        background-color: #fff1e8 !important;
+        color: #c2410c !important;
+        border-radius: 7px !important;
+    }
+
+
+    /* ======================================================
+       CHART AREA
+    ====================================================== */
+
+    div[data-testid="stPlotlyChart"] {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 18px;
+        padding: 8px;
+        margin-bottom: 18px;
+        box-shadow: 0 5px 18px rgba(15, 23, 42, 0.05);
+    }
+
+
+    /* ======================================================
+       DATA TABLE
+    ====================================================== */
+
+    div[data-testid="stDataFrame"] {
+        border: 1px solid #e2e8f0;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 18px rgba(15, 23, 42, 0.05);
+    }
+
+
+    /* ======================================================
+       INFO BOX
+    ====================================================== */
+
+    div[data-testid="stAlert"] {
+        border-radius: 14px;
+        border-left: 4px solid #f97316;
+    }
+
+
+    /* ======================================================
+       SIDEBAR FILTER TITLE
+    ====================================================== */
+
+    .filter-title {
+        font-size: 13px;
+        font-weight: 800;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        margin-top: 20px;
+        margin-bottom: 8px;
+    }
+
+
+    /* ======================================================
+       INSIGHT BOXES
+    ====================================================== */
+
+    .insight-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-left: 4px solid #f97316;
+        border-radius: 14px;
+        padding: 18px;
+        box-shadow: 0 5px 16px rgba(15, 23, 42, 0.05);
+        margin-top: 10px;
+    }
+
+    .insight-label {
+        font-size: 12px;
+        font-weight: 800;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+
+    .insight-value {
+        font-size: 19px;
+        font-weight: 800;
+        color: #172033;
+        margin-top: 7px;
+    }
+
+
+    /* ======================================================
+       FOOTER
+    ====================================================== */
+
+    .footer {
+        margin-top: 45px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 12px;
+    }
+
+
+    /* ======================================================
+       REMOVE DEFAULT STREAMLIT FOOTER
+    ====================================================== */
+
+    footer {
+        visibility: hidden;
+    }
+
+    #MainMenu {
+        visibility: hidden;
+    }
+
+
+    /* ======================================================
+       MOBILE
+    ====================================================== */
+
+    @media (max-width: 768px) {
+
+        .main-title {
+            font-size: 28px;
+        }
+
+        .main-subtitle {
+            font-size: 14px;
+        }
+
+        div[data-testid="stMetricValue"] {
+            font-size: 24px !important;
+        }
+    }
 
 </style>
 """, unsafe_allow_html=True)
@@ -466,20 +343,21 @@ def load_data():
     # Remove completely empty columns
     df = df.dropna(axis=1, how="all")
 
-    # Convert date
+    # Convert Date
     if "Date" in df.columns:
         df["Date"] = pd.to_datetime(
             df["Date"],
             errors="coerce"
         )
 
-    # Convert numeric columns
+    # Convert Amount
     if "Amount" in df.columns:
         df["Amount"] = pd.to_numeric(
             df["Amount"],
             errors="coerce"
         ).fillna(0)
 
+    # Convert Quantity
     if "Qty" in df.columns:
         df["Qty"] = pd.to_numeric(
             df["Qty"],
@@ -507,15 +385,16 @@ def load_data():
             )
 
         else:
+
             df["Customer Type"] = "B2C"
 
-    # Validate required columns
+    # Validate columns
     if "Date" not in df.columns:
-        st.error("Date column not found in dataset.")
+        st.error("Date column not found.")
         st.stop()
 
     if "Amount" not in df.columns:
-        st.error("Amount column not found in dataset.")
+        st.error("Amount column not found.")
         st.stop()
 
     # Remove invalid dates
@@ -531,23 +410,22 @@ df = load_data()
 # SIDEBAR
 # ============================================================
 
-st.sidebar.markdown(
-    """
-    <div class="sidebar-title">🛒 Sales Intelligence</div>
-    <div class="sidebar-subtitle">
-        Interactive Amazon sales analytics
-    </div>
-    """,
-    unsafe_allow_html=True
+st.sidebar.title("🛒 Sales Intelligence")
+
+st.sidebar.caption(
+    "Interactive Amazon sales analytics"
 )
 
 st.sidebar.markdown(
-    '<div class="filter-heading">Filters</div>',
+    '<div class="filter-title">Filters</div>',
     unsafe_allow_html=True
 )
 
 
-# Category filter
+# ------------------------------------------------------------
+# Category
+# ------------------------------------------------------------
+
 if "Category" in df.columns:
 
     categories = sorted(
@@ -565,10 +443,14 @@ if "Category" in df.columns:
     )
 
 else:
+
     selected_category = []
 
 
-# Size filter
+# ------------------------------------------------------------
+# Size
+# ------------------------------------------------------------
+
 if "Size" in df.columns:
 
     sizes = sorted(
@@ -586,10 +468,14 @@ if "Size" in df.columns:
     )
 
 else:
+
     selected_size = []
 
 
-# Courier status filter
+# ------------------------------------------------------------
+# Courier Status
+# ------------------------------------------------------------
+
 if "Courier Status" in df.columns:
 
     courier_statuses = sorted(
@@ -607,10 +493,14 @@ if "Courier Status" in df.columns:
     )
 
 else:
+
     selected_courier = []
 
 
-# Customer type filter
+# ------------------------------------------------------------
+# Customer Type
+# ------------------------------------------------------------
+
 customer_types = sorted(
     df["Customer Type"]
     .dropna()
@@ -626,12 +516,15 @@ selected_customer_type = st.sidebar.multiselect(
 )
 
 
-# Date filter
+# ------------------------------------------------------------
+# Date
+# ------------------------------------------------------------
+
 min_date = df["Date"].min().date()
 max_date = df["Date"].max().date()
 
 st.sidebar.markdown(
-    '<div class="filter-heading">Date Range</div>',
+    '<div class="filter-title">Date Range</div>',
     unsafe_allow_html=True
 )
 
@@ -651,6 +544,7 @@ filtered_df = df.copy()
 
 
 if "Category" in filtered_df.columns and selected_category:
+
     filtered_df = filtered_df[
         filtered_df["Category"]
         .astype(str)
@@ -659,6 +553,7 @@ if "Category" in filtered_df.columns and selected_category:
 
 
 if "Size" in filtered_df.columns and selected_size:
+
     filtered_df = filtered_df[
         filtered_df["Size"]
         .astype(str)
@@ -667,6 +562,7 @@ if "Size" in filtered_df.columns and selected_size:
 
 
 if "Courier Status" in filtered_df.columns and selected_courier:
+
     filtered_df = filtered_df[
         filtered_df["Courier Status"]
         .astype(str)
@@ -675,6 +571,7 @@ if "Courier Status" in filtered_df.columns and selected_courier:
 
 
 if selected_customer_type:
+
     filtered_df = filtered_df[
         filtered_df["Customer Type"]
         .astype(str)
@@ -682,7 +579,7 @@ if selected_customer_type:
     ]
 
 
-# Date filtering
+# Date filter
 if isinstance(selected_dates, tuple) and len(selected_dates) == 2:
 
     start_date = pd.Timestamp(selected_dates[0])
@@ -696,28 +593,19 @@ if isinstance(selected_dates, tuple) and len(selected_dates) == 2:
 
 
 # ============================================================
-# DASHBOARD HEADER
+# MAIN HEADER
 # ============================================================
 
 st.markdown(
-    """
-    <div class="dashboard-header">
+    '<div class="main-title">Amazon Sales Intelligence</div>',
+    unsafe_allow_html=True
+)
 
-        <div class="dashboard-title">
-            Amazon Sales Intelligence
-        </div>
-
-        <div class="dashboard-subtitle">
-            Interactive analytics dashboard for understanding
-            revenue, products, customers, and operations.
-        </div>
-
-        <div class="header-badge">
-            📈 Data-Driven Sales Analytics
-        </div>
-
-    </div>
-    """,
+st.markdown(
+    '<div class="main-subtitle">'
+    'Interactive analytics dashboard for understanding '
+    'revenue, products, customers, and operations.'
+    '</div>',
     unsafe_allow_html=True
 )
 
@@ -729,6 +617,7 @@ st.markdown(
 total_revenue = filtered_df["Amount"].sum()
 
 total_units = filtered_df["Qty"].sum()
+
 
 if "Order ID" in filtered_df.columns:
 
@@ -757,97 +646,33 @@ kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
 with kpi1:
 
-    st.markdown(
-        f"""
-        <div class="kpi-card">
-
-            <div class="kpi-label">
-                💰 Total Revenue
-            </div>
-
-            <div class="kpi-value">
-                ₹{total_revenue / 10000000:.2f} Cr
-            </div>
-
-            <div class="kpi-description">
-                Total sales generated
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.metric(
+        label="💰 Total Revenue",
+        value=f"₹{total_revenue / 10000000:.2f} Cr"
     )
 
 
 with kpi2:
 
-    st.markdown(
-        f"""
-        <div class="kpi-card">
-
-            <div class="kpi-label">
-                📦 Units Sold
-            </div>
-
-            <div class="kpi-value">
-                {total_units / 1000:.1f}K
-            </div>
-
-            <div class="kpi-description">
-                Products sold
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.metric(
+        label="📦 Units Sold",
+        value=f"{total_units / 1000:.1f}K"
     )
 
 
 with kpi3:
 
-    st.markdown(
-        f"""
-        <div class="kpi-card">
-
-            <div class="kpi-label">
-                🧾 Orders
-            </div>
-
-            <div class="kpi-value">
-                {total_orders / 1000:.1f}K
-            </div>
-
-            <div class="kpi-description">
-                Unique customer orders
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.metric(
+        label="🧾 Orders",
+        value=f"{total_orders / 1000:.1f}K"
     )
 
 
 with kpi4:
 
-    st.markdown(
-        f"""
-        <div class="kpi-card">
-
-            <div class="kpi-label">
-                🏷️ Products
-            </div>
-
-            <div class="kpi-value">
-                {total_products / 1000:.1f}K
-            </div>
-
-            <div class="kpi-description">
-                Unique SKUs
-            </div>
-
-        </div>
-        """,
-        unsafe_allow_html=True
+    st.metric(
+        label="🏷️ Products",
+        value=f"{total_products / 1000:.1f}K"
     )
 
 
@@ -872,20 +697,22 @@ tab1, tab2, tab3, tab4 = st.tabs(
 with tab1:
 
     st.markdown(
-        """
-        <div class="section-title">
-            Executive Overview
-        </div>
+        '<div class="section-header">Executive Overview</div>',
+        unsafe_allow_html=True
+    )
 
-        <div class="section-subtitle">
-            Understand overall sales performance and category trends.
-        </div>
-        """,
+    st.markdown(
+        '<div class="section-description">'
+        'Understand overall sales performance and category trends.'
+        '</div>',
         unsafe_allow_html=True
     )
 
 
-    # Sales Trend
+    # --------------------------------------------------------
+    # SALES PERFORMANCE
+    # --------------------------------------------------------
+
     daily_sales = (
         filtered_df
         .groupby("Date", as_index=False)["Amount"]
@@ -906,7 +733,8 @@ with tab1:
         xaxis_title="Date",
         yaxis_title="Revenue (₹)",
         hovermode="x unified",
-        height=420
+        height=420,
+        margin=dict(l=20, r=20, t=60, b=20)
     )
 
     st.plotly_chart(
@@ -916,7 +744,10 @@ with tab1:
     )
 
 
-    # Category + Size
+    # --------------------------------------------------------
+    # CATEGORY AND SIZE
+    # --------------------------------------------------------
+
     col1, col2 = st.columns(2)
 
 
@@ -941,7 +772,8 @@ with tab1:
 
             fig_category.update_layout(
                 template="plotly_white",
-                height=400
+                height=400,
+                margin=dict(l=20, r=20, t=60, b=20)
             )
 
             st.plotly_chart(
@@ -972,7 +804,8 @@ with tab1:
 
             fig_size.update_layout(
                 template="plotly_white",
-                height=400
+                height=400,
+                margin=dict(l=20, r=20, t=60, b=20)
             )
 
             st.plotly_chart(
@@ -989,20 +822,22 @@ with tab1:
 with tab2:
 
     st.markdown(
-        """
-        <div class="section-title">
-            Product Intelligence
-        </div>
+        '<div class="section-header">Product Intelligence</div>',
+        unsafe_allow_html=True
+    )
 
-        <div class="section-subtitle">
-            Identify the products and categories contributing most to sales.
-        </div>
-        """,
+    st.markdown(
+        '<div class="section-description">'
+        'Identify the products and categories contributing most to sales.'
+        '</div>',
         unsafe_allow_html=True
     )
 
 
-    # Top products by revenue
+    # --------------------------------------------------------
+    # TOP PRODUCTS
+    # --------------------------------------------------------
+
     if "SKU" in filtered_df.columns:
 
         top_products = (
@@ -1024,7 +859,8 @@ with tab2:
 
         fig_top_products.update_layout(
             template="plotly_white",
-            height=500
+            height=500,
+            margin=dict(l=20, r=20, t=60, b=20)
         )
 
         st.plotly_chart(
@@ -1034,7 +870,10 @@ with tab2:
         )
 
 
-    # Units by category
+    # --------------------------------------------------------
+    # UNITS BY CATEGORY
+    # --------------------------------------------------------
+
     if "Category" in filtered_df.columns:
 
         units_category = (
@@ -1054,7 +893,8 @@ with tab2:
 
         fig_units_category.update_layout(
             template="plotly_white",
-            height=400
+            height=400,
+            margin=dict(l=20, r=20, t=60, b=20)
         )
 
         st.plotly_chart(
@@ -1064,7 +904,10 @@ with tab2:
         )
 
 
-    # Product performance table
+    # --------------------------------------------------------
+    # PRODUCT TABLE
+    # --------------------------------------------------------
+
     if "SKU" in filtered_df.columns:
 
         product_table = (
@@ -1082,15 +925,14 @@ with tab2:
         product_table["Revenue"] = product_table["Revenue"].round(2)
 
         st.markdown(
-            """
-            <div class="section-title">
-                Product Performance
-            </div>
+            '<div class="section-header">Product Performance</div>',
+            unsafe_allow_html=True
+        )
 
-            <div class="section-subtitle">
-                Top 20 products ranked by revenue.
-            </div>
-            """,
+        st.markdown(
+            '<div class="section-description">'
+            'Top 20 products ranked by revenue.'
+            '</div>',
             unsafe_allow_html=True
         )
 
@@ -1108,15 +950,16 @@ with tab2:
 with tab3:
 
     st.markdown(
-        """
-        <div class="section-title">
-            Operations & Customer Insights
-        </div>
+        '<div class="section-header">'
+        'Operations & Customer Insights'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
-        <div class="section-subtitle">
-            Analyze delivery status, customer segments, and geographic performance.
-        </div>
-        """,
+    st.markdown(
+        '<div class="section-description">'
+        'Analyze delivery status, customer segments, and geographic performance.'
+        '</div>',
         unsafe_allow_html=True
     )
 
@@ -1124,7 +967,10 @@ with tab3:
     col1, col2 = st.columns(2)
 
 
-    # Courier Status
+    # --------------------------------------------------------
+    # COURIER STATUS
+    # --------------------------------------------------------
+
     with col1:
 
         if "Courier Status" in filtered_df.columns:
@@ -1150,7 +996,8 @@ with tab3:
 
             fig_courier.update_layout(
                 template="plotly_white",
-                height=400
+                height=400,
+                margin=dict(l=20, r=20, t=60, b=20)
             )
 
             st.plotly_chart(
@@ -1160,7 +1007,10 @@ with tab3:
             )
 
 
-    # Customer Type
+    # --------------------------------------------------------
+    # CUSTOMER TYPE
+    # --------------------------------------------------------
+
     with col2:
 
         customer_data = (
@@ -1184,7 +1034,8 @@ with tab3:
 
         fig_customer.update_layout(
             template="plotly_white",
-            height=400
+            height=400,
+            margin=dict(l=20, r=20, t=60, b=20)
         )
 
         st.plotly_chart(
@@ -1194,7 +1045,10 @@ with tab3:
         )
 
 
-    # Top states
+    # --------------------------------------------------------
+    # TOP STATES
+    # --------------------------------------------------------
+
     if "ship-state" in filtered_df.columns:
 
         state_sales = (
@@ -1216,7 +1070,8 @@ with tab3:
 
         fig_states.update_layout(
             template="plotly_white",
-            height=500
+            height=500,
+            margin=dict(l=20, r=20, t=60, b=20)
         )
 
         st.plotly_chart(
@@ -1233,15 +1088,14 @@ with tab3:
 with tab4:
 
     st.markdown(
-        """
-        <div class="section-title">
-            Deep Analysis
-        </div>
+        '<div class="section-header">Deep Analysis</div>',
+        unsafe_allow_html=True
+    )
 
-        <div class="section-subtitle">
-            Explore trends, relationships, and statistical patterns in the data.
-        </div>
-        """,
+    st.markdown(
+        '<div class="section-description">'
+        'Explore trends, relationships, and statistical patterns in the data.'
+        '</div>',
         unsafe_allow_html=True
     )
 
@@ -1273,7 +1127,8 @@ with tab4:
 
     fig_monthly.update_layout(
         template="plotly_white",
-        height=400
+        height=400,
+        margin=dict(l=20, r=20, t=60, b=20)
     )
 
     st.plotly_chart(
@@ -1284,7 +1139,7 @@ with tab4:
 
 
     # --------------------------------------------------------
-    # QUANTITY VS AMOUNT
+    # QUANTITY VS REVENUE
     # --------------------------------------------------------
 
     scatter_df = filtered_df[
@@ -1307,7 +1162,8 @@ with tab4:
 
     fig_scatter.update_layout(
         template="plotly_white",
-        height=450
+        height=450,
+        margin=dict(l=20, r=20, t=60, b=20)
     )
 
     st.plotly_chart(
@@ -1322,15 +1178,14 @@ with tab4:
     # ========================================================
 
     st.markdown(
-        """
-        <div class="section-title">
-            Correlation Analysis
-        </div>
+        '<div class="section-header">Correlation Analysis</div>',
+        unsafe_allow_html=True
+    )
 
-        <div class="section-subtitle">
-            Explore relationships between quantity, revenue, and B2B transactions.
-        </div>
-        """,
+    st.markdown(
+        '<div class="section-description">'
+        'Explore relationships between quantity, revenue, and B2B transactions.'
+        '</div>',
         unsafe_allow_html=True
     )
 
@@ -1354,7 +1209,7 @@ with tab4:
         ].copy()
 
 
-        # Convert B2B into numeric values
+        # Convert B2B values
         if "B2B" in correlation_df.columns:
 
             correlation_df["B2B"] = (
@@ -1372,7 +1227,7 @@ with tab4:
             )
 
 
-        # Convert numeric columns
+        # Convert columns to numeric
         for column in correlation_df.columns:
 
             correlation_df[column] = pd.to_numeric(
@@ -1398,7 +1253,8 @@ with tab4:
 
             fig_corr.update_layout(
                 template="plotly_white",
-                height=450
+                height=450,
+                margin=dict(l=20, r=20, t=60, b=20)
             )
 
             st.plotly_chart(
@@ -1418,18 +1274,13 @@ with tab4:
 
                 • **-1.00** → Strong negative relationship
 
-                Remember: correlation shows association, not causation.
+                Correlation shows association, not causation.
                 """
             )
 
 
-            # Show correlation values
             st.markdown(
-                """
-                <div class="section-title">
-                    Correlation Values
-                </div>
-                """,
+                '<div class="section-header">Correlation Values</div>',
                 unsafe_allow_html=True
             )
 
@@ -1444,15 +1295,14 @@ with tab4:
     # ========================================================
 
     st.markdown(
-        """
-        <div class="section-title">
-            Summary Statistics
-        </div>
+        '<div class="section-header">Summary Statistics</div>',
+        unsafe_allow_html=True
+    )
 
-        <div class="section-subtitle">
-            Key calculated metrics for the currently selected data.
-        </div>
-        """,
+    st.markdown(
+        '<div class="section-description">'
+        'Key calculated metrics for the currently selected data.'
+        '</div>',
         unsafe_allow_html=True
     )
 
@@ -1469,25 +1319,17 @@ with tab4:
         else 0
     )
 
+
     stat1, stat2, stat3 = st.columns(3)
 
 
     with stat1:
 
         st.markdown(
-            f"""
-            <div class="insight-card">
-
-                <div class="insight-title">
-                    Average Order Value
-                </div>
-
-                <div class="insight-value">
-                    ₹{avg_order_value:,.2f}
-                </div>
-
-            </div>
-            """,
+            '<div class="insight-box">'
+            '<div class="insight-label">Average Order Value</div>'
+            f'<div class="insight-value">₹{avg_order_value:,.2f}</div>'
+            '</div>',
             unsafe_allow_html=True
         )
 
@@ -1495,19 +1337,10 @@ with tab4:
     with stat2:
 
         st.markdown(
-            f"""
-            <div class="insight-card">
-
-                <div class="insight-title">
-                    Revenue per Unit
-                </div>
-
-                <div class="insight-value">
-                    ₹{revenue_per_unit:,.2f}
-                </div>
-
-            </div>
-            """,
+            '<div class="insight-box">'
+            '<div class="insight-label">Revenue per Unit</div>'
+            f'<div class="insight-value">₹{revenue_per_unit:,.2f}</div>'
+            '</div>',
             unsafe_allow_html=True
         )
 
@@ -1515,37 +1348,27 @@ with tab4:
     with stat3:
 
         st.markdown(
-            f"""
-            <div class="insight-card">
-
-                <div class="insight-title">
-                    Records Analyzed
-                </div>
-
-                <div class="insight-value">
-                    {len(filtered_df):,}
-                </div>
-
-            </div>
-            """,
+            '<div class="insight-box">'
+            '<div class="insight-label">Records Analyzed</div>'
+            f'<div class="insight-value">{len(filtered_df):,}</div>'
+            '</div>',
             unsafe_allow_html=True
         )
 
 
 # ============================================================
-# DYNAMIC BUSINESS INSIGHTS
+# BUSINESS INSIGHTS
 # ============================================================
 
 st.markdown(
-    """
-    <div class="section-title">
-        💡 Key Business Insights
-    </div>
+    '<div class="section-header">💡 Key Business Insights</div>',
+    unsafe_allow_html=True
+)
 
-    <div class="section-subtitle">
-        Automatically generated insights based on the selected filters.
-    </div>
-    """,
+st.markdown(
+    '<div class="section-description">'
+    'Automatically generated insights based on the selected filters.'
+    '</div>',
     unsafe_allow_html=True
 )
 
@@ -1553,7 +1376,10 @@ st.markdown(
 insight1, insight2, insight3 = st.columns(3)
 
 
-# Top category
+# ------------------------------------------------------------
+# TOP CATEGORY
+# ------------------------------------------------------------
+
 with insight1:
 
     if "Category" in filtered_df.columns and not filtered_df.empty:
@@ -1566,24 +1392,18 @@ with insight1:
         )
 
         st.markdown(
-            f"""
-            <div class="insight-card">
-
-                <div class="insight-title">
-                    🏆 Top Revenue Category
-                </div>
-
-                <div class="insight-value">
-                    {top_category}
-                </div>
-
-            </div>
-            """,
+            '<div class="insight-box">'
+            '<div class="insight-label">🏆 Top Revenue Category</div>'
+            f'<div class="insight-value">{top_category}</div>'
+            '</div>',
             unsafe_allow_html=True
         )
 
 
-# Highest revenue product
+# ------------------------------------------------------------
+# TOP PRODUCT
+# ------------------------------------------------------------
+
 with insight2:
 
     if "SKU" in filtered_df.columns and not filtered_df.empty:
@@ -1596,24 +1416,18 @@ with insight2:
         )
 
         st.markdown(
-            f"""
-            <div class="insight-card">
-
-                <div class="insight-title">
-                    ⭐ Highest Revenue Product
-                </div>
-
-                <div class="insight-value">
-                    {top_product}
-                </div>
-
-            </div>
-            """,
+            '<div class="insight-box">'
+            '<div class="insight-label">⭐ Highest Revenue Product</div>'
+            f'<div class="insight-value">{top_product}</div>'
+            '</div>',
             unsafe_allow_html=True
         )
 
 
-# Dominant customer segment
+# ------------------------------------------------------------
+# CUSTOMER SEGMENT
+# ------------------------------------------------------------
+
 with insight3:
 
     if not filtered_df.empty:
@@ -1625,19 +1439,10 @@ with insight3:
         )
 
         st.markdown(
-            f"""
-            <div class="insight-card">
-
-                <div class="insight-title">
-                    👥 Dominant Customer Segment
-                </div>
-
-                <div class="insight-value">
-                    {dominant_customer}
-                </div>
-
-            </div>
-            """,
+            '<div class="insight-box">'
+            '<div class="insight-label">👥 Dominant Customer Segment</div>'
+            f'<div class="insight-value">{dominant_customer}</div>'
+            '</div>',
             unsafe_allow_html=True
         )
 
@@ -1648,20 +1453,12 @@ with insight3:
 
 st.markdown(
     """
-    <div class="dashboard-footer">
-
-        <span class="footer-brand">
-            Amazon Sales Intelligence
-        </span>
-
-        &nbsp;•&nbsp;
-
+    <div class="footer">
+        <strong>Amazon Sales Intelligence</strong>
+        &nbsp; • &nbsp;
         Interactive Sales Analytics Dashboard
-
         <br><br>
-
         Built with Python, Pandas, Plotly & Streamlit
-
     </div>
     """,
     unsafe_allow_html=True
