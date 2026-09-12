@@ -40,6 +40,7 @@ st.markdown("""
     padding-right: 3rem;
 }
 
+
 /* Sidebar */
 
 section[data-testid="stSidebar"] {
@@ -195,38 +196,48 @@ def load_data():
 
     df = pd.read_csv(file_name)
 
+    # --------------------------------------------------------
     # Remove completely empty columns
+    # --------------------------------------------------------
+
     df = df.dropna(axis=1, how="all")
+
 
     # --------------------------------------------------------
     # DATE
     # --------------------------------------------------------
 
     if "Date" in df.columns:
+
         df["Date"] = pd.to_datetime(
             df["Date"],
             errors="coerce"
         )
+
 
     # --------------------------------------------------------
     # AMOUNT
     # --------------------------------------------------------
 
     if "Amount" in df.columns:
+
         df["Amount"] = pd.to_numeric(
             df["Amount"],
             errors="coerce"
         ).fillna(0)
+
 
     # --------------------------------------------------------
     # QUANTITY
     # --------------------------------------------------------
 
     if "Qty" in df.columns:
+
         df["Qty"] = pd.to_numeric(
             df["Qty"],
             errors="coerce"
         ).fillna(0)
+
 
     # --------------------------------------------------------
     # ORDER ID
@@ -241,9 +252,13 @@ def load_data():
         ]
 
         for col in possible_order_columns:
+
             if col in df.columns:
+
                 df["Order ID"] = df[col]
+
                 break
+
 
     # --------------------------------------------------------
     # SKU
@@ -259,16 +274,17 @@ def load_data():
         ]
 
         for col in possible_sku_columns:
+
             if col in df.columns:
+
                 df["SKU"] = df[col]
+
                 break
+
 
     # --------------------------------------------------------
     # CUSTOMER TYPE
     # --------------------------------------------------------
-
-    # If Customer Type doesn't exist, create a reasonable
-    # fallback using B2B information if available.
 
     if "Customer Type" not in df.columns:
 
@@ -283,12 +299,19 @@ def load_data():
             )
 
         else:
+
             df["Customer Type"] = "All Customers"
+
 
     return df
 
 
+# ============================================================
+# LOAD DATA SAFELY
+# ============================================================
+
 try:
+
     df = load_data()
 
 except FileNotFoundError:
@@ -306,16 +329,28 @@ except FileNotFoundError:
 # ============================================================
 
 if "Date" not in df.columns:
-    st.error("The dataset must contain a 'Date' column.")
+
+    st.error(
+        "The dataset must contain a 'Date' column."
+    )
+
     st.stop()
 
+
 if "Amount" not in df.columns:
-    st.error("The dataset must contain an 'Amount' column.")
+
+    st.error(
+        "The dataset must contain an 'Amount' column."
+    )
+
     st.stop()
 
 
 # Remove rows without dates
-df = df.dropna(subset=["Date"]).copy()
+
+df = df.dropna(
+    subset=["Date"]
+).copy()
 
 
 # ============================================================
@@ -334,6 +369,7 @@ with st.sidebar:
     )
 
     st.markdown("---")
+
 
     # --------------------------------------------------------
     # CATEGORY
@@ -356,6 +392,7 @@ with st.sidebar:
         )
 
     else:
+
         selected_category = "All"
 
 
@@ -380,6 +417,7 @@ with st.sidebar:
         )
 
     else:
+
         selected_size = "All"
 
 
@@ -404,6 +442,7 @@ with st.sidebar:
         )
 
     else:
+
         selected_courier = "All"
 
 
@@ -427,18 +466,13 @@ with st.sidebar:
 
 
     # ========================================================
-    # FIXED DATE RANGE FILTER
+    # DATE RANGE FILTER
     # ========================================================
 
-    # IMPORTANT:
-    # The date picker is restricted to dates actually present
-    # in the dataset.
-    #
-    # This prevents the problem where Streamlit allows
-    # 2026 dates even though the dataset is from 2022.
-
     min_date = df["Date"].min().date()
+
     max_date = df["Date"].max().date()
+
 
     selected_dates = st.date_input(
         "Date Range",
@@ -453,18 +487,32 @@ with st.sidebar:
     # SAFELY PROCESS DATE SELECTION
     # --------------------------------------------------------
 
-    if isinstance(selected_dates, tuple) and len(selected_dates) == 2:
+    if (
+        isinstance(selected_dates, tuple)
+        and len(selected_dates) == 2
+    ):
 
-        start_date = pd.Timestamp(selected_dates[0])
-        end_date = pd.Timestamp(selected_dates[1])
+        start_date = pd.Timestamp(
+            selected_dates[0]
+        )
+
+        end_date = pd.Timestamp(
+            selected_dates[1]
+        )
 
     else:
 
-        start_date = pd.Timestamp(min_date)
-        end_date = pd.Timestamp(max_date)
+        start_date = pd.Timestamp(
+            min_date
+        )
+
+        end_date = pd.Timestamp(
+            max_date
+        )
 
 
     st.markdown("---")
+
 
     st.caption(
         "Filters update the complete dashboard dynamically."
@@ -482,24 +530,44 @@ with st.sidebar:
 filtered_df = df.copy()
 
 
-# Category
-if selected_category != "All" and "Category" in filtered_df.columns:
+# ------------------------------------------------------------
+# CATEGORY FILTER
+# ------------------------------------------------------------
+
+if (
+    selected_category != "All"
+    and "Category" in filtered_df.columns
+):
 
     filtered_df = filtered_df[
-        filtered_df["Category"].astype(str) == selected_category
+        filtered_df["Category"].astype(str)
+        == selected_category
     ]
 
 
-# Size
-if selected_size != "All" and "Size" in filtered_df.columns:
+# ------------------------------------------------------------
+# SIZE FILTER
+# ------------------------------------------------------------
+
+if (
+    selected_size != "All"
+    and "Size" in filtered_df.columns
+):
 
     filtered_df = filtered_df[
-        filtered_df["Size"].astype(str) == selected_size
+        filtered_df["Size"].astype(str)
+        == selected_size
     ]
 
 
-# Courier Status
-if selected_courier != "All" and "Courier Status" in filtered_df.columns:
+# ------------------------------------------------------------
+# COURIER STATUS FILTER
+# ------------------------------------------------------------
+
+if (
+    selected_courier != "All"
+    and "Courier Status" in filtered_df.columns
+):
 
     filtered_df = filtered_df[
         filtered_df["Courier Status"].astype(str)
@@ -507,7 +575,10 @@ if selected_courier != "All" and "Courier Status" in filtered_df.columns:
     ]
 
 
-# Customer Type
+# ------------------------------------------------------------
+# CUSTOMER TYPE FILTER
+# ------------------------------------------------------------
+
 if selected_customer != "All":
 
     filtered_df = filtered_df[
@@ -516,7 +587,10 @@ if selected_customer != "All":
     ]
 
 
-# Date
+# ------------------------------------------------------------
+# DATE FILTER
+# ------------------------------------------------------------
+
 filtered_df = filtered_df[
     (filtered_df["Date"] >= start_date)
     &
@@ -548,15 +622,19 @@ st.markdown(
 
 total_revenue = filtered_df["Amount"].sum()
 
+
 total_units = (
     filtered_df["Qty"].sum()
     if "Qty" in filtered_df.columns
     else 0
 )
 
+
 if "Order ID" in filtered_df.columns:
 
-    total_orders = filtered_df["Order ID"].nunique()
+    total_orders = (
+        filtered_df["Order ID"].nunique()
+    )
 
 else:
 
@@ -565,7 +643,9 @@ else:
 
 if "SKU" in filtered_df.columns:
 
-    total_products = filtered_df["SKU"].nunique()
+    total_products = (
+        filtered_df["SKU"].nunique()
+    )
 
 else:
 
@@ -579,27 +659,34 @@ else:
 def format_currency(value):
 
     if value >= 10000000:
+
         return f"₹{value / 10000000:.2f}Cr"
 
     elif value >= 100000:
+
         return f"₹{value / 100000:.1f}L"
 
     elif value >= 1000:
+
         return f"₹{value / 1000:.1f}K"
 
     else:
+
         return f"₹{value:,.0f}"
 
 
 def format_number(value):
 
     if value >= 1000000:
+
         return f"{value / 1000000:.1f}M"
 
     elif value >= 1000:
+
         return f"{value / 1000:.1f}K"
 
     else:
+
         return f"{value:,.0f}"
 
 
@@ -609,6 +696,10 @@ def format_number(value):
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 
+
+# ------------------------------------------------------------
+# KPI 1
+# ------------------------------------------------------------
 
 with kpi1:
 
@@ -634,6 +725,10 @@ with kpi1:
     )
 
 
+# ------------------------------------------------------------
+# KPI 2
+# ------------------------------------------------------------
+
 with kpi2:
 
     st.markdown(
@@ -658,6 +753,10 @@ with kpi2:
     )
 
 
+# ------------------------------------------------------------
+# KPI 3
+# ------------------------------------------------------------
+
 with kpi3:
 
     st.markdown(
@@ -681,6 +780,10 @@ with kpi3:
         unsafe_allow_html=True
     )
 
+
+# ------------------------------------------------------------
+# KPI 4
+# ------------------------------------------------------------
 
 with kpi4:
 
@@ -748,10 +851,14 @@ with tab1:
 
         daily_sales = (
             filtered_df
-            .groupby("Date", as_index=False)["Amount"]
+            .groupby(
+                "Date",
+                as_index=False
+            )["Amount"]
             .sum()
             .sort_values("Date")
         )
+
 
         fig_sales = px.line(
             daily_sales,
@@ -761,13 +868,20 @@ with tab1:
             title="Sales Performance"
         )
 
+
         fig_sales.update_layout(
             template="plotly_white",
             height=450,
-            margin=dict(l=20, r=20, t=60, b=20),
+            margin=dict(
+                l=20,
+                r=20,
+                t=60,
+                b=20
+            ),
             xaxis_title="Date",
             yaxis_title="Revenue (₹)"
         )
+
 
         st.plotly_chart(
             fig_sales,
@@ -789,6 +903,10 @@ with tab1:
     col1, col2 = st.columns(2)
 
 
+    # --------------------------------------------------------
+    # REVENUE BY CATEGORY
+    # --------------------------------------------------------
+
     with col1:
 
         if (
@@ -798,11 +916,18 @@ with tab1:
 
             category_sales = (
                 filtered_df
-                .groupby("Category", as_index=False)["Amount"]
+                .groupby(
+                    "Category",
+                    as_index=False
+                )["Amount"]
                 .sum()
-                .sort_values("Amount", ascending=False)
+                .sort_values(
+                    "Amount",
+                    ascending=False
+                )
                 .head(10)
             )
+
 
             fig_category = px.bar(
                 category_sales,
@@ -812,11 +937,18 @@ with tab1:
                 title="Revenue by Category"
             )
 
+
             fig_category.update_layout(
                 template="plotly_white",
                 height=420,
-                margin=dict(l=20, r=20, t=60, b=20)
+                margin=dict(
+                    l=20,
+                    r=20,
+                    t=60,
+                    b=20
+                )
             )
+
 
             st.plotly_chart(
                 fig_category,
@@ -824,6 +956,10 @@ with tab1:
                 key="executive_category_revenue"
             )
 
+
+    # --------------------------------------------------------
+    # REVENUE BY SIZE
+    # --------------------------------------------------------
 
     with col2:
 
@@ -834,10 +970,17 @@ with tab1:
 
             size_sales = (
                 filtered_df
-                .groupby("Size", as_index=False)["Amount"]
+                .groupby(
+                    "Size",
+                    as_index=False
+                )["Amount"]
                 .sum()
-                .sort_values("Amount", ascending=False)
+                .sort_values(
+                    "Amount",
+                    ascending=False
+                )
             )
+
 
             fig_size = px.bar(
                 size_sales,
@@ -846,11 +989,18 @@ with tab1:
                 title="Revenue by Size"
             )
 
+
             fig_size.update_layout(
                 template="plotly_white",
                 height=420,
-                margin=dict(l=20, r=20, t=60, b=20)
+                margin=dict(
+                    l=20,
+                    r=20,
+                    t=60,
+                    b=20
+                )
             )
+
 
             st.plotly_chart(
                 fig_size,
@@ -895,7 +1045,10 @@ with tab2:
 
             top_products = (
                 filtered_df
-                .groupby("SKU", as_index=False)["Amount"]
+                .groupby(
+                    "SKU",
+                    as_index=False
+                )["Amount"]
                 .sum()
                 .sort_values(
                     "Amount",
@@ -903,6 +1056,7 @@ with tab2:
                 )
                 .head(10)
             )
+
 
             fig_top_products = px.bar(
                 top_products,
@@ -912,11 +1066,18 @@ with tab2:
                 title="Top 10 Products by Revenue"
             )
 
+
             fig_top_products.update_layout(
                 template="plotly_white",
                 height=450,
-                margin=dict(l=20, r=20, t=60, b=20)
+                margin=dict(
+                    l=20,
+                    r=20,
+                    t=60,
+                    b=20
+                )
             )
+
 
             st.plotly_chart(
                 fig_top_products,
@@ -933,12 +1094,16 @@ with tab2:
 
         if (
             "Category" in filtered_df.columns
+            and "Qty" in filtered_df.columns
             and not filtered_df.empty
         ):
 
             category_quantity = (
                 filtered_df
-                .groupby("Category", as_index=False)["Qty"]
+                .groupby(
+                    "Category",
+                    as_index=False
+                )["Qty"]
                 .sum()
                 .sort_values(
                     "Qty",
@@ -947,6 +1112,7 @@ with tab2:
                 .head(10)
             )
 
+
             fig_category_qty = px.bar(
                 category_quantity,
                 x="Category",
@@ -954,11 +1120,18 @@ with tab2:
                 title="Units Sold by Category"
             )
 
+
             fig_category_qty.update_layout(
                 template="plotly_white",
                 height=450,
-                margin=dict(l=20, r=20, t=60, b=20)
+                margin=dict(
+                    l=20,
+                    r=20,
+                    t=60,
+                    b=20
+                )
             )
+
 
             st.plotly_chart(
                 fig_category_qty,
@@ -973,6 +1146,7 @@ with tab2:
 
     if (
         "SKU" in filtered_df.columns
+        and "Qty" in filtered_df.columns
         and not filtered_df.empty
     ):
 
@@ -991,6 +1165,7 @@ with tab2:
             .head(20)
         )
 
+
         st.markdown(
             """
             <div class="section-title">
@@ -999,6 +1174,7 @@ with tab2:
             """,
             unsafe_allow_html=True
         )
+
 
         st.dataframe(
             product_summary,
@@ -1049,10 +1225,12 @@ with tab3:
                 .reset_index()
             )
 
+
             courier_data.columns = [
                 "Courier Status",
                 "Orders"
             ]
+
 
             fig_courier = px.pie(
                 courier_data,
@@ -1062,10 +1240,12 @@ with tab3:
                 title="Courier Status Distribution"
             )
 
+
             fig_courier.update_layout(
                 template="plotly_white",
                 height=430
             )
+
 
             st.plotly_chart(
                 fig_courier,
@@ -1090,10 +1270,12 @@ with tab3:
                 .reset_index()
             )
 
+
             customer_data.columns = [
                 "Customer Type",
                 "Orders"
             ]
+
 
             fig_customer = px.pie(
                 customer_data,
@@ -1103,10 +1285,12 @@ with tab3:
                 title="Customer Type Distribution"
             )
 
+
             fig_customer.update_layout(
                 template="plotly_white",
                 height=430
             )
+
 
             st.plotly_chart(
                 fig_customer,
@@ -1138,6 +1322,7 @@ with tab3:
             .head(15)
         )
 
+
         fig_state = px.bar(
             state_sales,
             x="Amount",
@@ -1146,10 +1331,12 @@ with tab3:
             title="Top States by Revenue"
         )
 
+
         fig_state.update_layout(
             template="plotly_white",
             height=500
         )
+
 
         st.plotly_chart(
             fig_state,
@@ -1184,20 +1371,30 @@ with tab4:
             "No records available for the selected filters."
         )
 
+
     else:
 
-        # ----------------------------------------------------
+        # ====================================================
         # MONTHLY SALES
-        # ----------------------------------------------------
+        # ====================================================
 
         monthly_data = (
             filtered_df
             .assign(
-                Month=filtered_df["Date"].dt.to_period("M").astype(str)
+                Month=filtered_df[
+                    "Date"
+                ]
+                .dt
+                .to_period("M")
+                .astype(str)
             )
-            .groupby("Month", as_index=False)["Amount"]
+            .groupby(
+                "Month",
+                as_index=False
+            )["Amount"]
             .sum()
         )
+
 
         fig_monthly = px.bar(
             monthly_data,
@@ -1206,10 +1403,12 @@ with tab4:
             title="Monthly Revenue"
         )
 
+
         fig_monthly.update_layout(
             template="plotly_white",
             height=430
         )
+
 
         st.plotly_chart(
             fig_monthly,
@@ -1218,20 +1417,24 @@ with tab4:
         )
 
 
-        # ----------------------------------------------------
+        # ====================================================
         # REVENUE VS QUANTITY
-        # ----------------------------------------------------
+        # ====================================================
 
         if "Qty" in filtered_df.columns:
 
             analysis_df = (
                 filtered_df
-                .groupby("Date", as_index=False)
+                .groupby(
+                    "Date",
+                    as_index=False
+                )
                 .agg(
                     Revenue=("Amount", "sum"),
                     Quantity=("Qty", "sum")
                 )
             )
+
 
             fig_scatter = px.scatter(
                 analysis_df,
@@ -1241,10 +1444,12 @@ with tab4:
                 trendline=None
             )
 
+
             fig_scatter.update_layout(
                 template="plotly_white",
                 height=430
             )
+
 
             st.plotly_chart(
                 fig_scatter,
@@ -1253,9 +1458,194 @@ with tab4:
             )
 
 
+        # ====================================================
+        # CORRELATION ANALYSIS
+        # ====================================================
+
+        st.markdown(
+            """
+            <div class="section-title">
+            🔗 Correlation Analysis
+            </div>
+
+            <div class="section-subtitle">
+            Relationship between important numerical variables
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
         # ----------------------------------------------------
+        # SELECT NUMERICAL COLUMNS
+        # ----------------------------------------------------
+
+        correlation_columns = []
+
+
+        if "Qty" in filtered_df.columns:
+
+            correlation_columns.append("Qty")
+
+
+        if "Amount" in filtered_df.columns:
+
+            correlation_columns.append("Amount")
+
+
+        if "B2B" in filtered_df.columns:
+
+            correlation_columns.append("B2B")
+
+
+        # ----------------------------------------------------
+        # CREATE CORRELATION MATRIX
+        # ----------------------------------------------------
+
+        if len(correlation_columns) >= 2:
+
+            correlation_df = filtered_df[
+                correlation_columns
+            ].copy()
+
+
+            # ------------------------------------------------
+            # CONVERT B2B INTO 1 / 0
+            # ------------------------------------------------
+
+            if "B2B" in correlation_df.columns:
+
+                correlation_df["B2B"] = (
+                    correlation_df["B2B"]
+                    .astype(str)
+                    .str.lower()
+                    .map(
+                        {
+                            "true": 1,
+                            "false": 0,
+                            "1": 1,
+                            "0": 0,
+                            "yes": 1,
+                            "no": 0
+                        }
+                    )
+                )
+
+
+            # ------------------------------------------------
+            # CONVERT ALL SELECTED COLUMNS TO NUMERIC
+            # ------------------------------------------------
+
+            for column in correlation_df.columns:
+
+                correlation_df[column] = pd.to_numeric(
+                    correlation_df[column],
+                    errors="coerce"
+                )
+
+
+            # ------------------------------------------------
+            # REMOVE INVALID ROWS
+            # ------------------------------------------------
+
+            correlation_df = correlation_df.dropna()
+
+
+            # ------------------------------------------------
+            # CALCULATE CORRELATION
+            # ------------------------------------------------
+
+            correlation_matrix = (
+                correlation_df.corr()
+            )
+
+
+            # ------------------------------------------------
+            # CREATE HEATMAP
+            # ------------------------------------------------
+
+            fig_corr = px.imshow(
+                correlation_matrix,
+                text_auto=".2f",
+                aspect="auto",
+                title="Correlation Heatmap"
+            )
+
+
+            fig_corr.update_layout(
+                template="plotly_white",
+                height=450,
+                margin=dict(
+                    l=20,
+                    r=20,
+                    t=60,
+                    b=20
+                )
+            )
+
+
+            # ------------------------------------------------
+            # DISPLAY HEATMAP
+            # ------------------------------------------------
+
+            st.plotly_chart(
+                fig_corr,
+                use_container_width=True,
+                key="deep_correlation_heatmap"
+            )
+
+
+            # ------------------------------------------------
+            # SHOW CORRELATION VALUES
+            # ------------------------------------------------
+
+            st.markdown(
+                """
+                <div class="section-title">
+                Correlation Values
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+            st.dataframe(
+                correlation_matrix.round(2),
+                use_container_width=True
+            )
+
+
+            # ------------------------------------------------
+            # EXPLANATION
+            # ------------------------------------------------
+
+            st.info(
+                """
+                **How to interpret correlation:**
+
+                • +1.00 → Strong positive relationship
+
+                • 0.00 → Little or no linear relationship
+
+                • -1.00 → Strong negative relationship
+
+                **Important:** Correlation shows association,
+                not causation.
+                """
+            )
+
+
+        else:
+
+            st.info(
+                "Not enough numerical columns available "
+                "for correlation analysis."
+            )
+
+
+        # ====================================================
         # SUMMARY STATISTICS
-        # ----------------------------------------------------
+        # ====================================================
 
         st.markdown(
             """
@@ -1266,8 +1656,13 @@ with tab4:
             unsafe_allow_html=True
         )
 
+
         summary1, summary2, summary3 = st.columns(3)
 
+
+        # ----------------------------------------------------
+        # AVERAGE ORDER VALUE
+        # ----------------------------------------------------
 
         average_order_value = (
             total_revenue / total_orders
@@ -1275,11 +1670,17 @@ with tab4:
             else 0
         )
 
+
+        # ----------------------------------------------------
+        # REVENUE PER UNIT
+        # ----------------------------------------------------
+
         revenue_per_unit = (
             total_revenue / total_units
             if total_units > 0
             else 0
         )
+
 
         with summary1:
 
@@ -1329,9 +1730,10 @@ st.markdown(
 
 if not filtered_df.empty:
 
-    # --------------------------------------------------------
+
+    # ========================================================
     # TOP CATEGORY
-    # --------------------------------------------------------
+    # ========================================================
 
     if "Category" in filtered_df.columns:
 
@@ -1344,13 +1746,18 @@ if not filtered_df.empty:
             )
         )
 
+
         if not category_summary.empty:
 
-            top_category = category_summary.index[0]
+            top_category = (
+                category_summary.index[0]
+            )
+
 
             top_category_value = (
                 category_summary.iloc[0]
             )
+
 
             st.markdown(
                 f"""
@@ -1373,9 +1780,9 @@ if not filtered_df.empty:
             )
 
 
-    # --------------------------------------------------------
+    # ========================================================
     # TOP PRODUCT
-    # --------------------------------------------------------
+    # ========================================================
 
     if "SKU" in filtered_df.columns:
 
@@ -1388,11 +1795,18 @@ if not filtered_df.empty:
             )
         )
 
+
         if not sku_summary.empty:
 
-            top_sku = sku_summary.index[0]
+            top_sku = (
+                sku_summary.index[0]
+            )
 
-            top_sku_value = sku_summary.iloc[0]
+
+            top_sku_value = (
+                sku_summary.iloc[0]
+            )
+
 
             st.markdown(
                 f"""
@@ -1414,9 +1828,9 @@ if not filtered_df.empty:
             )
 
 
-    # --------------------------------------------------------
+    # ========================================================
     # CUSTOMER INSIGHT
-    # --------------------------------------------------------
+    # ========================================================
 
     customer_summary = (
         filtered_df[
@@ -1425,15 +1839,18 @@ if not filtered_df.empty:
         .value_counts()
     )
 
+
     if not customer_summary.empty:
 
         dominant_customer = (
             customer_summary.index[0]
         )
 
+
         dominant_customer_count = (
             customer_summary.iloc[0]
         )
+
 
         st.markdown(
             f"""
@@ -1459,7 +1876,8 @@ if not filtered_df.empty:
 else:
 
     st.info(
-        "No insights available because no records match the selected filters."
+        "No insights available because no records "
+        "match the selected filters."
     )
 
 
